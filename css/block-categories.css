@@ -1,0 +1,53 @@
+
+.workspace__categories {
+    flex-grow: 0.3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-right: 2px solid black;
+    padding: 10px 0;
+    gap: 15px;
+}
+.workspace__tabs a{
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    color: black;
+    gap: 5px; 
+    background-color: #00000022;
+    border-radius: 1em;
+    padding: 0.2em;
+}
+
+.icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid black;
+}
+
+.tab {
+    font-size: 0.85em;
+    text-align: center;
+    user-select: none;
+}
+.workspace__tabs{
+    display: flex;
+    flex-direction: column;
+    gap:10px;
+}
+
+
+.workspace__icon-literals {
+    background-color: #8a2be2; 
+    }
+.workspace__icon-arrays { 
+    background-color: #32cd32; 
+}
+.workspace__icon-math { 
+    background-color: #1e90ff; 
+}
+.workspace__icon-logic {
+    background-color: #ff1493; 
+}
+

@@ -1,0 +1,43 @@
+.workspace__block-palette{
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.block{
+    background-color: rgba(21, 75, 221, 0.744);
+    height: 6vh;
+    width: fit-content;
+    border: 2px solid black;
+    margin: 20px 0px 0px 5px;
+    cursor: grab;
+    padding: 0.8em 0.8em; 
+    user-select: none;
+}
+
+.workspace__category-1{
+    margin: 20px 0px 0px 10px;
+}
+
+.category{
+    font-size: 2em;
+    font-weight: bold;
+    opacity:0.7;
+    margin: 25px 0px 0px 10px;
+    user-select: none;
+}
+
+.workspace__plus-block{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    height: 7vh;
+    align-items: center;
+}
+
+.workspace__branch{
+    width: 35px;
+    height: 25px;
+    background-color: white;
+    border: 2px solid #444;
+    display: flex;
+}

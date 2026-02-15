@@ -1,0 +1,16 @@
+
+.workspace__plus-block{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    height: 7vh;
+    align-items: center;
+}
+
+.workspace__branch{
+    width: 35px;
+    height: 25px;
+    background-color: white;
+    border: 2px solid #444;
+    display: flex;
+}

@@ -1,0 +1,17 @@
+body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.workspace {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+.container{
+    border: 2px solid black;
+    
+    /* margin-top: 7vh; */
+}

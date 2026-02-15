@@ -4,7 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/reset.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/workspace.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/consol.css">
+    <link rel="stylesheet" href="css/code-editor.css">
+    <link rel="stylesheet" href="css/block-palette.css">
+    <link rel="stylesheet" href="css/block-categories.css">
+    <script src="js/console.js" defer></script>
+    <script src = "js/drag&drop.js"></script>
     <title>Document</title>
 </head>
 <body>
@@ -78,7 +86,10 @@
         </section>
 
         <section class="workspace__code-editor container"> </section>
-        <section class = "workspace__consol container"></section>
+        <section class = "workspace__consol container">
+            <div class = "workspace__output"></div>
+            <input class = "workspace__input" type="text">
+        </section>
     </section>
 </body>
 </html>
