@@ -1,0 +1,131 @@
+header{
+    background-color: blueviolet;
+    height: 50px;
+}
+.logotype{
+    display:flex;
+    flex-direction: row;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+img{
+    width:40px;
+    height:40px;
+    margin-top: 6px;
+    margin-left: 5px;
+}
+
+.logo{
+    margin-top: 20px;
+    margin-left: 5px;
+}
+
+.workspace {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+.workspace__code-editor{
+    flex: 7.5 0 0;
+    position: relative;
+}
+.workspace__block-palette{
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.workspace__consol{
+    flex-grow: 5.5
+} 
+.container{
+    border: 2px solid black;
+    
+    /* margin-top: 7vh; */
+}
+
+.block{
+    background-color: rgba(21, 75, 221, 0.744);
+    height: 6vh;
+    width: fit-content;
+    border: 2px solid black;
+    margin: 20px 0px 0px 5px;
+    cursor: grab;
+    padding: 0.8em 0.8em; 
+    user-select: none;
+}
+
+.workspace__category-1{
+    margin: 20px 0px 0px 10px;
+}
+
+.category{
+    font-size: 2em;
+    font-weight: bold;
+    opacity:0.7;
+    margin: 25px 0px 0px 10px;
+    user-select: none;
+}
+
+.workspace__categories {
+    flex-grow: 0.3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-right: 2px solid black;
+    padding: 10px 0;
+    gap: 15px;
+}
+.workspace__tabs a{
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    color: black;
+    gap: 5px; 
+    background-color: #00000022;
+    border-radius: 1em;
+    padding: 0.2em;
+}
+
+.icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid black;
+}
+
+/* Текст под кружком */
+.tab {
+    font-size: 0.85em;
+    text-align: center;
+    user-select: none;
+}
+.workspace__tabs{
+    display: flex;
+    flex-direction: column;
+    gap:10px;
+}
+
+.workspace__icon-literals { background-color: #8a2be2; }
+.workspace__icon-arrays { background-color: #32cd32; }
+.workspace__icon-math { background-color: #1e90ff; }
+.workspace__icon-logic { background-color: #ff1493; }
+
+.workspace__plus-block{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    height: 7vh;
+    align-items: center;
+}
+
+.workspace__branch{
+    width: 35px;
+    height: 25px;
+    background-color: white;
+    border: 2px solid #444;
+    display: flex;
+}

@@ -3,9 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/reset.css">
+    <link rel="stylesheet" href="style.css">
     <title>Document</title>
 </head>
 <body>
-    
+    <header>
+        <div class = "logotype">
+            <img src="logo.png" alt="Лого">
+            <h1 class = "logo">Scratch--</h1>
+        </div>
+    </header>
+    <section class = "workspace">
+        <section class = "workspace__categories container">
+            <section class="workspace__tabs">
+                <a href="#literals">
+                    <div class="workspace__icon-literals icon"></div>
+                    <p class="workspace__tab-literals tab">Lit and Var</p>
+                </a>
+                <a href="#arrays">
+                    <div class="workspace__icon-arrays icon"></div>
+                    <p class="workspace__tab-arrays tab">Arrays</p>
+                </a>
+                <a href="#math">
+                    <div class="workspace__icon-math icon"></div>
+                    <p class="workspace__tab-math tab">Math</p>
+                </a>
+                <a href="#logic">
+                    <div class="workspace__icon-logic icon"></div>
+                    <p class="workspace__tab-logic tab">Logic</p>
+                </a>
+            </section>
+        </section>
+        <section class="workspace__block-palette container">
+            
+            <div class="workspace__category-1 category" id="literals">Literals & Variables</div>
+            <div class="workspace__numberLiteral-block block">Число</div>
+            <div class="workspace__stringLiteral-block block">Строка</div>
+            <div class="workspace__boolLiteral-block block">Булеан</div>
+            <div class="workspace__variable-block block">Переменная</div>
+            <div class="workspace__assign-block block">Присвоить</div>
+
+            <div class="workspace__category-2 category" id="arrays">Arrays</div>
+            <div class="workspace__array-block block">Создать список</div>
+            <div class="workspace__at-block block">Элемент по индексу</div>
+            <div class="workspace__set_at-block block">Изменить элемент</div>
+            <div class="workspace__insert_at-block block">Вставить элемент</div>
+            <div class="workspace__erase_at-block block">Удалить элемент</div>
+            <div class="workspace__len-block block">Длина списка</div>
+
+            <div class="workspace__category-4 category" id="math">Math Operators</div>
+            <div class="workspace__plus-block block"> 
+                <div class = "workspace__branch"></div> 
+                <div>+</div> 
+                <div class = "workspace__branch"></div> 
+            </div>
+            <div class="workspace__minus-block block">-</div>
+            <div class="workspace__multiply-block block">*</div>
+            <div class="workspace__divide-block block">/</div>
+            <div class="workspace__intDivide-block block">//</div>
+            <div class="workspace__mod-block block">%</div>
+            <div class="workspace__power-block block">^</div>
+
+            <div class="workspace__category-5 category" id="logic">Logic</div>
+            <div class="workspace__eq-block block">==</div>
+            <div class="workspace__neq-block block">!=</div>
+            <div class="workspace__lt-block block">&lt;</div>
+            <div class="workspace__gt-block block">&gt;</div>
+            <div class="workspace__lte-block block">&lt;=</div>
+            <div class="workspace__gte-block block">&gt;=</div>
+            <div class="workspace__and-block block">and</div>
+            <div class="workspace__or-block block">or</div>
+            <div class="workspace__not-block block">not</div>
+        </section>
+
+        <section class="workspace__code-editor container"> </section>
+        <section class = "workspace__consol container"></section>
+    </section>
 </body>
 </html>
