@@ -14,6 +14,15 @@
     user-select: none;
 }
 
+.code-block {
+    position: absolute;
+    background-color: rgba(21, 75, 221, 0.85);
+    border: 2px solid black;
+    padding: 0.8em;
+    cursor: grab;
+    user-select: none;
+}
+
 .workspace__category-1{
     margin: 20px 0px 0px 10px;
 }
