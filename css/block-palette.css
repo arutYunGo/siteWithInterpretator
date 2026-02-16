@@ -43,6 +43,10 @@
     align-items: center;
 }
 
+.workspace__plus-block > *{
+    pointer-events: none;
+}
+
 .workspace__branch{
     width: 35px;
     height: 25px;

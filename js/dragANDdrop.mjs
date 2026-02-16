@@ -6,7 +6,8 @@ let clickInsideBLockX = 0;
 let clickInsideBLockY = 0;    
 
 palette.addEventListener("pointerdown", (e) => {
-    if(!e.target.classList.contains("block")) return;
+    const isBlock = e.target.classList.contains("block");
+    if(!isBlock) return;
 
     const clone = e.target.cloneNode(true);
     clone.classList.remove("block");
@@ -23,6 +24,26 @@ palette.addEventListener("pointerdown", (e) => {
     clone.style.position = "absolute";
     clone.style.left = e.clientX - clickInsideBLockX + 'px';
     clone.style.top = e.clientY - clickInsideBLockY + 'px';
+});
+
+editor.addEventListener("pointerdown", (e) => {
+    const block = e.target.closest(".code-block");
+    if(!block) return;
+
+    e.stopPropagation(); 
+
+    currentBlock = block;
+
+    const cordOriginalBlock = block.getBoundingClientRect();
+
+    clickInsideBLockX = e.clientX - cordOriginalBlock.left;
+    clickInsideBLockY = e.clientY - cordOriginalBlock.top;
+
+    document.body.appendChild(block);
+
+    block.style.position = "absolute";
+    block.style.left = e.clientX - clickInsideBLockX + 'px';
+    block.style.top = e.clientY - clickInsideBLockY + 'px';
 });
 
 document.addEventListener("pointermove", (e) => {
