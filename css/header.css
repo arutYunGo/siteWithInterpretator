@@ -1,8 +1,8 @@
 header{
-    background-color: blueviolet;
+    background-color: pink;
     height: 50px;
 }
-.logotype{
+.title{
     display:flex;
     flex-direction: row;
 }
@@ -13,7 +13,7 @@ img{
     margin-left: 5px;
 }
 
-.logo{
+.title__logo{
     margin-top: 20px;
     margin-left: 5px;
 }

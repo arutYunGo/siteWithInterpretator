@@ -1,6 +1,6 @@
 const palette = document.querySelector(".workspace__block-palette");
 const editor = document.querySelector(".workspace__code-editor");
-let currentBlock = null;
+let draggingBlock = null;
 
 let clickInsideBLockX = 0;
 let clickInsideBLockY = 0;    
@@ -14,7 +14,7 @@ palette.addEventListener("pointerdown", (e) => {
     clone.classList.add("code-block");
 
     document.body.append(clone);
-    currentBlock = clone;
+    draggingBlock = clone;
 
     const cordOriginalBlock = e.target.getBoundingClientRect();
 
@@ -30,9 +30,7 @@ editor.addEventListener("pointerdown", (e) => {
     const block = e.target.closest(".code-block");
     if(!block) return;
 
-    e.stopPropagation(); 
-
-    currentBlock = block;
+    draggingBlock = block;
 
     const cordOriginalBlock = block.getBoundingClientRect();
 
@@ -47,14 +45,14 @@ editor.addEventListener("pointerdown", (e) => {
 });
 
 document.addEventListener("pointermove", (e) => {
-    if(!currentBlock) return;
+    if(!draggingBlock) return;
 
-    currentBlock.style.left = e.clientX - clickInsideBLockX + 'px';
-    currentBlock.style.top = e.clientY - clickInsideBLockY + 'px';
+    draggingBlock.style.left = e.clientX - clickInsideBLockX + 'px';
+    draggingBlock.style.top = e.clientY - clickInsideBLockY + 'px';
 });
 
 document.addEventListener("pointerup", (e) => {
-    if(!currentBlock) return;
+    if(!draggingBlock) return;
 
     const cordEditor = editor.getBoundingClientRect();
     
@@ -65,13 +63,13 @@ document.addEventListener("pointerup", (e) => {
         }
     }
     if(!isEditor){
-        currentBlock.remove();
+        draggingBlock.remove();
     }
     else{
-        editor.appendChild(currentBlock);
+        editor.appendChild(draggingBlock);
 
-        currentBlock.style.left = e.clientX - cordEditor.left - clickInsideBLockX + 'px';
-        currentBlock.style.top = e.clientY - cordEditor.top - clickInsideBLockY + 'px';
+        draggingBlock.style.left = e.clientX - cordEditor.left - clickInsideBLockX + 'px';
+        draggingBlock.style.top = e.clientY - cordEditor.top - clickInsideBLockY + 'px';
     }
-    currentBlock = null;
+    draggingBlock = null;
 });
