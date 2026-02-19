@@ -1,9 +1,26 @@
 const palette = document.querySelector(".workspace__block-palette");
 const editor = document.querySelector(".workspace__code-editor");
 let draggingBlock = null;
+let currentBranch = null;
 
 let clickInsideBLockX = 0;
 let clickInsideBLockY = 0;    
+
+function getBranchUnderCursor(x,y){
+    const branches = document.querySelectorAll(".workspace__branch");
+    
+    const maxLayerBranch = [...branches].filter(b => {
+        const rect = b.getBoundingClientRect();
+        const inside = 
+            x >= rect.left &&
+            x <= rect.right && 
+            y >= rect.top && 
+            y <= rect.bottom;
+        return inside;
+    })
+    return maxLayerBranch ? maxLayerBranch.at(-1) : null;
+}
+
 
 palette.addEventListener("pointerdown", (e) => {
     const isBlock = e.target.classList.contains("block");
