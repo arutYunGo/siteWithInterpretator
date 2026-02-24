@@ -9,3 +9,4 @@ input.addEventListener("keydown",(e) => {
     output.innerHTML += `<div>Команда "${cmd}" выполнена</div>`;
     input.value = '';
 });
+

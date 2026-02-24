@@ -6,21 +6,20 @@ let currentBranch = null;
 let clickInsideBLockX = 0;
 let clickInsideBLockY = 0;    
 
-function getBranchUnderCursor(x,y){
-    const branches = document.querySelectorAll(".workspace__branch");
+function getBranchUnderCursor(x, y) {
+    const branches = editor.querySelectorAll(".workspace__branch");
     
-    const maxLayerBranch = [...branches].filter(b => {
+    // Фильтруем ветки: нам нужны только те, что НЕ внутри draggingBlock
+    const availableBranches = [...branches].filter(b => {
+        if (draggingBlock && draggingBlock.contains(b)) return false;
+        
         const rect = b.getBoundingClientRect();
-        const inside = 
-            x >= rect.left &&
-            x <= rect.right && 
-            y >= rect.top && 
-            y <= rect.bottom;
-        return inside;
-    })
-    return maxLayerBranch ? maxLayerBranch.at(-1) : null;
-}
+        return x >= rect.left && x <= rect.right && 
+               y >= rect.top && y <= rect.bottom;
+    });
 
+    return availableBranches.length ? availableBranches.at(-1) : null;
+}
 
 palette.addEventListener("pointerdown", (e) => {
     const isBlock = e.target.classList.contains("block");
@@ -57,6 +56,9 @@ editor.addEventListener("pointerdown", (e) => {
     document.body.appendChild(block);
 
     block.style.position = "absolute";
+    block.style.zIndex = "1000";
+    block.style.pointerEvents = "none"; 
+    
     block.style.left = e.clientX - clickInsideBLockX + 'px';
     block.style.top = e.clientY - clickInsideBLockY + 'px';
 });
@@ -66,11 +68,23 @@ document.addEventListener("pointermove", (e) => {
 
     draggingBlock.style.left = e.clientX - clickInsideBLockX + 'px';
     draggingBlock.style.top = e.clientY - clickInsideBLockY + 'px';
+
+    const branch = getBranchUnderCursor(e.clientX, e.clientY); 
+
+    if(branch !== currentBranch){
+        if(currentBranch) currentBranch.classList.remove('highlight');
+        if(branch) branch.classList.add('highlight');
+        currentBranch = branch;
+    }
 });
 
 document.addEventListener("pointerup", (e) => {
     if(!draggingBlock) return;
 
+    draggingBlock.style.pointerEvents = "auto";
+    draggingBlock.style.zIndex = "";
+
+    const branch = getBranchUnderCursor(e.clientX, e.clientY);
     const cordEditor = editor.getBoundingClientRect();
     
     let isEditor = false;
@@ -82,11 +96,20 @@ document.addEventListener("pointerup", (e) => {
     if(!isEditor){
         draggingBlock.remove();
     }
+    else if(branch){
+        branch.appendChild(draggingBlock);
+        draggingBlock.style.position = 'static';
+    }
     else{
         editor.appendChild(draggingBlock);
 
         draggingBlock.style.left = e.clientX - cordEditor.left - clickInsideBLockX + 'px';
         draggingBlock.style.top = e.clientY - cordEditor.top - clickInsideBLockY + 'px';
+        draggingBlock.style.position = 'absolute';
+    }
+    if (currentBranch) { 
+        currentBranch.classList.remove('highlight'); 
+        currentBranch = null; 
     }
     draggingBlock = null;
 });
