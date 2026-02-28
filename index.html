@@ -14,6 +14,7 @@
     <script src="js/console.mjs" defer></script>
     <script src = "js/dragANDdrop.mjs" type = "module"></script>
     <script src = "js/code-editorZOOM.mjs" type = "module"></script>
+    <script src="js/interpreter.mjs" type = "module"></script>
     <title>Document</title>
 </head>
 <body>
@@ -23,6 +24,7 @@
             <h1 class = "title__logo">Scratch--</h1>
         </div>
     </header>
+    <button id = "run-btn" type = "button"></button>
     <section class = "workspace">
         <section class = "workspace__categories container">
             <section class="workspace__tabs">
@@ -48,19 +50,19 @@
             
             <div class="workspace__category-1 category" id="literals">Literals & Variables</div>
             <div class="workspace__numberLiteral-block block with-input">
-                <div>Число</div>
+                Число
                 <input type="number" class = "workspace__input">
             </div>
             <div class="workspace__stringLiteral-block block with-input">
-                <div>Строка</div>
+                Строка
                 <input type="text" class = "workspace__input">
             </div>
             <div class="workspace__boolLiteral-block block with-input">
-                <div>Булеан</div>
+                Булеан
                 <input type="text" class = "workspace__input">
             </div>
             <div class="workspace__variable-block block with-input">
-                <div>Переменная</div>
+                Переменная
                 <input type="text" class = "workspace__input">
             </div>
             <div class="workspace__assign-block block with-branch">
@@ -80,10 +82,11 @@
             <div class="workspace__category-4 category" id="math">Math Operators</div>
             <div class="workspace__plus-block block with-branch">
                 <div class="workspace__branch" data-branch></div>
-                <input type="text" class= "workspace__input">
+                <!-- <input type="text" class= "workspace__input"> -->
+                <div class="workspace__operation">+</div>
                 <div class="workspace__branch" data-branch></div>
             </div>
-            <!-- <div class="workspace__minus-block block with-branch">
+            <div class="workspace__minus-block block with-branch">
                 <div class="workspace__branch" data-branch></div>
                 <div class="workspace__operation">-</div>
                 <div class="workspace__branch" data-branch></div>
@@ -119,7 +122,7 @@
                 <div class="workspace__branch" data-branch></div>
                 <div class="workspace__operation">==</div>
                 <div class="workspace__branch" data-branch></div>
-            </div> -->
+            </div> 
 
             <div class="workspace__neq-block block with-branch">
                 <div class="workspace__branch" data-branch></div>

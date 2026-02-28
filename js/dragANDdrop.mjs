@@ -1,4 +1,5 @@
 import {zoomState, ChangeTransform} from './code-editorZOOM.mjs';
+import {collectData} from './interpreter.mjs';
 const palette = document.querySelector(".workspace__block-palette");
 const editor = document.querySelector(".workspace__code-editor");
 const scene = document.querySelector(".workspace__scene");
@@ -81,7 +82,6 @@ viewport.addEventListener("pointerdown", (e) => {
 
 document.addEventListener("pointermove", (e) => {
     if(isPanning){ 
-        console.log(zoomState.x)
         zoomState.x += e.clientX - lastMouseX;
         zoomState.y += e.clientY - lastMouseY;
         lastMouseX = e.clientX;
@@ -105,6 +105,7 @@ document.addEventListener("pointermove", (e) => {
 document.addEventListener("pointerup", (e) => {
     isPanning = false;
     if(!draggingBlock) return;
+    console.log(JSON.stringify(collectData(draggingBlock), null, 2))
 
     draggingBlock.style.pointerEvents = "auto";
     draggingBlock.style.zIndex = "";
