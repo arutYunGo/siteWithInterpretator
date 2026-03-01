@@ -1,19 +1,21 @@
 header{
     background-color: pink;
     height: 50px;
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
 }
+
 .title{
     display:flex;
     flex-direction: row;
-}
-img{
-    width:40px;
-    height:40px;
-    margin-top: 6px;
-    margin-left: 5px;
+    align-items: center;
+    gap: 5px;
 }
 
-.title__logo{
-    margin-top: 20px;
-    margin-left: 5px;
+img{
+    height:40px;
+    margin-left: 10px;
+    margin-top: -2px;
 }

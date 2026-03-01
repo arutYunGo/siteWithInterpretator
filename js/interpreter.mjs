@@ -56,12 +56,17 @@ export function collectData(block){
             return null;
         } 
     });
+    const nextBlock = block.querySelector(".workspace__next-block");
+
+    if(nextBlock && nextBlock.firstElementChild){
+        element.next = collectData(nextBlock.firstElementChild);
+    }
+
     return element;
 }
 
-function run(node){
+function executeCurrentBlock(node){
     let left,right;
-    if(!node) return 0; 
     switch(node.type){
         case "number":
             return node.value;
@@ -70,7 +75,7 @@ function run(node){
             right = run(node.childrens[1]);
             return left + right;
         case "var":
-            return memory[node.value] || 0;
+            return memory[node.value] || 0; // 0 - для того, чтобы арифм. операции не ломались
         case "assign":
             left = node.childrens[0];
     
@@ -79,12 +84,24 @@ function run(node){
                 return null; 
             }
             right = run(node.childrens[1]);
-
-            memory[node.value] = right;
+            
+            const varName = left.value;
+            memory[varName.value] = right;
             return right;
         default:
             return null;
     }
+}
+
+function run(node){
+    if(!node) return 0; 
+    
+    let result = executeCurrentBlock(node);
+
+    if(node.next){
+        return run(node.next);
+    }
+    return result;  
 }
 const runButton = document.querySelector('#run-btn');
 
