@@ -2,219 +2,157 @@ class Scope {
     constructor() {
         this.vars = new Map();
     }
-
     declare(name) {
-        if (typeof name !== 'string' || name.trim() === '') {
-            throw { message: `Некорректное имя переменной: "${name}"`, node: this, type: 'Scope.declare' };
-        }
-        if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) {
-            throw { message: `Некорректное имя переменной: "${name}" (должно начинаться с буквы или '_', далее буквы, цифры, '_')`, node: this, type: 'Scope.declare' };
-        }
-        if (this.vars.has(name)) {
-            throw { message: `Переменная "${name}" уже объявлена`, node: this, type: 'Scope.declare' };
-        }
+        if (!name || typeof name !== 'string' || name.trim() === '') throw new Error(`Имя переменной пустое`);
+        if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) throw new Error(`Некорректное имя "${name}"`);
+        if (this.vars.has(name)) throw new Error(`Переменная "${name}" уже существует`);
         this.vars.set(name, 0);
     }
-
     get(name) {
-        if (typeof name !== 'string' || name.trim() === '') {
-            throw { message: `Некорректное имя переменной: "${name}"`, node: this, type: 'Scope.get' };
-        }
-        const v = this.vars.get(name);
-        if (v === undefined) {
-            throw { message: `Переменная "${name}" не найдена`, node: this, type: 'Scope.get' };
-        }
-        return v;
+        if (!this.vars.has(name)) throw new Error(`Переменная "${name}" не найдена`);
+        return this.vars.get(name);
     }
-
     set(name, value) {
-        if (typeof name !== 'string' || name.trim() === '') {
-            throw { message: `Некорректное имя переменной: "${name}"`, node: this, type: 'Scope.set' };
-        }
-        if (!this.vars.has(name)) {
-            throw { message: `Переменная "${name}" не объявлена`, node: this, type: 'Scope.set' };
-        }
+        if (!this.vars.has(name)) throw new Error(`Переменная "${name}" не объявлена`);
         this.vars.set(name, value);
     }
 }
 
-class Expression {
-    evaluate(scope) { throw new Error("Must implement evaluate()"); }
-}
-
-class NumberLiteral extends Expression {
-    constructor(value, nodeId = null) {
-        super();
-        this.value = value;
-        this.nodeId = nodeId;
+class Node {
+    constructor(nodeId) {
+        this.nodeId = nodeId || `temp-${Math.random()}`;
     }
-    evaluate(scope) { return this.value; }
+    createError(message) {
+        return { message, nodeId: this.nodeId, type: this.constructor.name };
+    }
 }
 
-class VariableRef extends Expression {
-    constructor(name, nodeId = null) {
-        super();
-        this.name = name;
-        this.nodeId = nodeId;
+class NumberLiteral extends Node {
+    constructor(value, nodeId) { super(nodeId); this.value = Number(value); }
+    evaluate() { return Math.floor(this.value); }
+}
+
+class VariableRef extends Node {
+    constructor(name, nodeId) { super(nodeId); this.name = name; }
+    evaluate(scope) {
+        try { return scope.get(this.name); } catch (e) { throw this.createError(e.message); }
+    }
+}
+
+class BinaryOp extends Node {
+    constructor(left, op, right, nodeId) {
+        super(nodeId); this.left = left; this.op = op; this.right = right;
     }
     evaluate(scope) {
-        if (typeof this.name !== 'string' || this.name.trim() === '') {
-            throw { message: `Некорректное имя переменной: "${this.name}"`, node: this, type: 'VariableRef' };
-        }
-        if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(this.name)) {
-            throw { message: `Некорректное имя переменной: "${this.name}" (должно начинаться с буквы или '_', далее буквы, цифры, '_')`, node: this, type: 'VariableRef' };
-        }
-        try {
-            return scope.get(this.name);
-        } catch (e) {
-            e.message = `Переменная "${this.name}" не найдена`;
-            e.node = this;
-            e.type = 'VariableRef';
-            throw e;
-        }
-    }
-}
-
-class BinaryOp extends Expression {
-    constructor(left, op, right, nodeId = null) {
-        super();
-        this.left = left;
-        this.op = op;
-        this.right = right;
-        this.nodeId = nodeId;
-    }
-    evaluate(scope) {
+        if (!this.left || !this.right) throw this.createError("Математическая операция не заполнена");
         const l = this.left.evaluate(scope);
         const r = this.right.evaluate(scope);
-        if (!['+', '-', '*', '/', '%'].includes(this.op)) {
-            throw { message: `Неизвестная операция: "${this.op}"`, node: this, type: 'BinaryOp' };
-        }
         switch (this.op) {
-            case '/': if (r === 0) throw { message: `Деление на ноль: ${l} / ${r}`, node: this, type: 'BinaryOp' }; return Math.floor(l / r);
-            case '%': if (r === 0) throw { message: `Остаток от деления на ноль: ${l} % ${r}`, node: this, type: 'BinaryOp' }; return l % r;
             case '+': return l + r;
             case '-': return l - r;
             case '*': return l * r;
-            default: throw { message: `Неизвестная операция: "${this.op}"`, node: this, type: 'BinaryOp' };
+            case '/': if (r === 0) throw this.createError("Деление на ноль"); return Math.floor(l / r);
+            case '%': if (r === 0) throw this.createError("Остаток от деления на ноль"); return l % r;
+            default: throw this.createError("Неизвестный оператор");
         }
     }
 }
 
-class Comparison extends Expression {
-    constructor(left, op, right, nodeId = null) {
-        super();
-        this.left = left;
-        this.op = op;
-        this.right = right;
-        this.nodeId = nodeId;
+class Comparison extends Node {
+    constructor(left, op, right, nodeId) {
+        super(nodeId); this.left = left; this.op = op; this.right = right;
     }
     evaluate(scope) {
+        if (!this.left || !this.right) throw this.createError("Сравнение не заполнено");
         const l = this.left.evaluate(scope);
         const r = this.right.evaluate(scope);
         switch (this.op) {
             case '==': return l === r;
             case '!=': return l !== r;
-            case '<': return l < r;
-            case '>': return l > r;
-            case '<=': return l <= r;
+            case '>':  return l > r;
+            case '<':  return l < r;
             case '>=': return l >= r;
-            default:
-                throw { message: `Неизвестный оператор сравнения: "${this.op}"`, node: this, type: 'Comparison' };
+            case '<=': return l <= r;
+            default: throw this.createError("Ошибка сравнения");
         }
     }
 }
 
-class Statement {
-    execute(scope) { throw new Error("Must implement execute()"); }
+class LogicalOp extends Node {
+    constructor(left, op, right, nodeId) {
+        super(nodeId); this.left = left; this.op = op; this.right = right;
+    }
+    evaluate(scope) {
+        if (!this.left || !this.right) throw this.createError("Логическое выражение не заполнено");
+        const l = this.left.evaluate(scope);
+        const r = this.right.evaluate(scope);
+        switch (this.op) {
+            case 'AND': return l && r;
+            case 'OR':  return l || r;
+            default: throw this.createError("Неизвестный логический оператор");
+        }
+    }
 }
 
-class AssignStatement extends Statement {
-    constructor(variable, expression, nodeId = null) {
-        super();
-        this.variable = variable;
-        this.expression = expression;
-        this.nodeId = nodeId;
+class NotOp extends Node {
+    constructor(expression, nodeId) { super(nodeId); this.expression = expression; }
+    evaluate(scope) {
+        if (!this.expression) throw this.createError("Пустое выражение после NOT");
+        return !this.expression.evaluate(scope);
+    }
+}
+
+class DeclareStatement extends Node {
+    constructor(names, nodeId) { super(nodeId); this.names = names; }
+    execute(scope) {
+        for (const name of this.names) {
+            try { scope.declare(name); } catch (e) { throw this.createError(e.message); }
+        }
+    }
+}
+
+class AssignStatement extends Node {
+    constructor(varName, expression, nodeId) {
+        super(nodeId); this.varName = varName; this.expression = expression;
     }
     execute(scope) {
-        try {
-            const v = this.expression.evaluate(scope);
-            scope.set(this.variable, v);
-        } catch (e) {
-            if (e.type === 'Scope.set' && e.message.includes('не объявлена')) {
-                e.message = `Переменная "${this.variable}" не объявлена`;
-                e.node = this;
-                e.type = 'AssignStatement';
-            }
-            throw e;
-        }
+        if (!this.expression) throw this.createError("Значение не указано");
+        const val = this.expression.evaluate(scope);
+        try { scope.set(this.varName, val); } catch (e) { throw this.createError(e.message); }
     }
 }
 
-class IfStatement extends Statement {
-    constructor(condition, thenBranch, nodeId = null) {
-        super();
+class IfStatement extends Node {
+    constructor(condition, thenBranch, elseBranch, nodeId) {
+        super(nodeId);
         this.condition = condition;
         this.thenBranch = thenBranch;
-        this.nodeId = nodeId;
+        this.elseBranch = elseBranch; 
     }
     execute(scope) {
-        const cond = this.condition.evaluate(scope);
-        if (cond) {
-            for (const stmt of this.thenBranch) {
-                stmt.execute(scope); // ошибка здесь выйдет наружу
-            }
-        }
-    }
-}
-
-class DeclareStatement extends Statement {
-    constructor(names, nodeId = null) {
-        super();
-        this.names = names;
-        this.nodeId = nodeId;
-    }
-    execute(scope) {
-        for (const n of this.names) {
-            try {
-                scope.declare(n);
-            } catch (e) {
-                if (e.type === 'Scope.declare') {
-                    let msg;
-                    if (e.message.includes('уже объявлена')) {
-                        msg = `Переменная "${n}" уже объявлена`;
-                    } else if (e.message.includes('Некорректное имя')) {
-                        msg = n.trim() === ''
-                            ? `Некорректное имя переменной: "${n}"`
-                            : `Некорректное имя переменной: "${n}" (должно начинаться с буквы или '_', далее буквы, цифры, '_')`;
-                    } else {
-                        msg = e.message;
-                    }
-                    e.message = msg;
-                    e.node = this;
-                    e.type = 'DeclareStatement';
-                }
-                throw e;
-            }
+        if (!this.condition) throw this.createError("Условие IF не заполнено");
+        
+        if (this.condition.evaluate(scope)) {
+            for (const stmt of this.thenBranch) if (stmt) stmt.execute(scope);
+        } else if (this.elseBranch) {
+            for (const stmt of this.elseBranch) if (stmt) stmt.execute(scope);
         }
     }
 }
 
 class Interpreter {
-    interpret(statements, scope) {
-        for (const stmt of statements) {
-            stmt.execute(scope);
+    interpret(statements) {
+        const scope = new Scope();
+        try {
+            for (const stmt of statements) if (stmt) stmt.execute(scope);
+            return { success: true, vars: Object.fromEntries(scope.vars) };
+        } catch (error) {
+            return { success: false, error: error.nodeId ? error : { message: error.message, nodeId: "root" } };
         }
     }
 }
 
-export {
-    Interpreter,
-    Scope,
-    NumberLiteral,
-    VariableRef,
-    BinaryOp,
-    Comparison,
-    AssignStatement,
-    IfStatement,
-    DeclareStatement
+export { 
+    Interpreter, Scope, NumberLiteral, VariableRef, BinaryOp, 
+    Comparison, LogicalOp, NotOp, DeclareStatement, AssignStatement, IfStatement 
 };
