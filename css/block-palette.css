@@ -5,7 +5,7 @@
 
 .block{
     background-color: rgba(21, 75, 221, 0.744);
-    height: 6vh;
+    min-height: 6vh;
     width: fit-content;
     border: 2px solid black;
     margin: 20px 0px 0px 5px;
@@ -43,22 +43,23 @@
     align-items: center;
 }
 
-.workspace__plus-block > *{
+/* .workspace__-block > *{
     pointer-events: none;
-}
+} */
 
 .workspace__branch{
     min-width: 35px;
     min-height: 25px;
     background-color: white;
     border: 2px solid #444;
-    /* display: flex;
+    display: flex;
     align-items: center;
-    justify-content: center; */
+    justify-content: center;
     position: relative;
     width: fit-content;
     height: fit-content;
 }
+
 
 .with-branch {
     display: flex;
@@ -88,4 +89,32 @@
     background-color: white;
     border: 2px solid #444;
     position: relative;
+}
+
+
+.workspace__block-content { 
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    width: fit-content;
+    padding: 0.8em 0.8em;
+}    
+
+.workspace__next-block {
+    display: flex;
+    flex-direction: column;
+    min-height: 10px;
+    width: 100%;
+}
+
+.workspace__next-block > .code-block {
+    position: static;
+    border: 0px;
+}
+
+.workspace__assign-block{
+    display: flex;
+    flex-direction: column;
+    padding: 0;
 }

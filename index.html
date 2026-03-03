@@ -71,11 +71,26 @@
                 Переменная
                 <input type="text" class = "workspace__input">
             </div>
-            <div class="workspace__assign-block block with-branch">
-                <div class = "workspace__branch" data-branch></div> 
-                <div class = workspace__operation>=</div> 
-                <div class = "workspace__branch" data-branch></div> 
+            <div class="workspace__assign-block block">
+                <div class = "workspace__block-content with-branch">
+                    <div class = "workspace__branch" data-branch></div> 
+                    <div class = workspace__operation>=</div> 
+                    <div class = "workspace__branch" data-branch></div> 
+                </div>
                 <div class = "workspace__next-block"></div> 
+            </div>
+
+            <div class="workspace__start-block block">
+                <div class="workspace__block-content">
+                    <div>START PROGRAMM</div>
+                </div>
+                <div class="workspace__next-block"></div>
+            </div>
+
+            <div class="workspace__print-block block with-branch">
+                Print
+                <div class="workspace__branch" data-branch></div>
+                <div class="workspace__next-block"></div> 
             </div>
 
             <div class="workspace__category-2 category" id="arrays">Arrays</div>
@@ -92,43 +107,36 @@
                 <!-- <input type="text" class= "workspace__input"> -->
                 <div class="workspace__operation">+</div>
                 <div class="workspace__branch" data-branch></div>
-                <div class = "workspace__next-block"></div> 
             </div>
             <div class="workspace__minus-block block with-branch">
                 <div class="workspace__branch" data-branch></div>
                 <div class="workspace__operation">-</div>
                 <div class="workspace__branch" data-branch></div>
-                <div class = "workspace__next-block"></div> 
             </div>
             <div class="workspace__multiply-block block with-branch">
                 <div class="workspace__branch" data-branch></div>
                 <div class="workspace__operation">*</div>
                 <div class="workspace__branch" data-branch></div>
-                <div class = "workspace__next-block"></div> 
             </div>
             <div class="workspace__divide-block block with-branch">
                 <div class="workspace__branch" data-branch></div>
                 <div class="workspace__operation">/</div>
                 <div class="workspace__branch" data-branch></div>
-                <div class = "workspace__next-block"></div> 
             </div>
             <div class="workspace__intDivide-block block with-branch">
                 <div class="workspace__branch" data-branch></div>
                 <div class="workspace__operation">//</div>
                 <div class="workspace__branch" data-branch></div>
-                <div class = "workspace__next-block"></div> 
             </div>
             <div class="workspace__mod-block block with-branch">
                 <div class="workspace__branch" data-branch></div>
                 <div class="workspace__operation">%</div>
                 <div class="workspace__branch" data-branch></div>
-                <div class = "workspace__next-block"></div> 
             </div>
             <div class="workspace__power-block block with-branch">
                 <div class="workspace__branch" data-branch></div>
                 <div class="workspace__operation">**</div>
                 <div class="workspace__branch" data-branch></div>
-                <div class = "workspace__next-block"></div> 
             </div>
 
             <div class="workspace__category-5 category" id="logic">Logic</div>

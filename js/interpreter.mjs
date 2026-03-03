@@ -85,13 +85,19 @@ function executeCurrentBlock(node){
             }
             right = run(node.childrens[1]);
             
-            const varName = left.value;
-            memory[varName.value] = right;
+            memory[left.value] = right;
             return right;
+        case "print":
+            const print = run(node.childrens[0]);
+
+            const output = document.querySelector('.workspace__output');
+            output.innerHTML += `<div>> ${valToPrint}</div>`;
+            return print;
         default:
             return null;
     }
 }
+
 
 function run(node){
     if(!node) return 0; 
@@ -111,6 +117,7 @@ runButton.addEventListener('click',() => {
     
     if(firstBlock){
         const data = collectData(firstBlock);
+        console.log("Data tree:", data)
         const result = run(data);
         console.log("Результат: ", result);
     }

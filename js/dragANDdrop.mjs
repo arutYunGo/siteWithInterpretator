@@ -5,7 +5,7 @@ const editor = document.querySelector(".workspace__code-editor");
 const scene = document.querySelector(".workspace__scene");
 const viewport = document.querySelector(".workspace__viewport");
 let draggingBlock = null;
-let currentBranch = null;
+let currentTarget = null;
 
 let clickInsideBLockX = 0;
 let clickInsideBLockY = 0;    
@@ -30,18 +30,34 @@ function getBranchUnderCursor(x, y) {
     return availableBranches.length ? availableBranches.at(-1) : null;
 }
 
+function getNextBlockUnderCursor(x,y){
+    const blocks = editor.querySelectorAll(".workspace__next-block");
+
+    const availableBlocks = [...blocks].filter(b => {
+        if(draggingBlock && draggingBlock.contains(b)) return false;
+
+        if (b.children.length > 0) return false;
+        if(!draggingBlock.querySelector(".workspace__next-block")) return false;
+
+        const rect = b.getBoundingClientRect();
+        return x >= rect.left && x <= rect.right && 
+               y >= rect.top && y <= rect.bottom;
+    })
+    return availableBlocks.length ? availableBlocks.at(0) : null;
+}
+
 palette.addEventListener("pointerdown", (e) => {
-    const isBlock = e.target.classList.contains("block");
+    const isBlock = e.target.closest(".block");
     if(!isBlock) return;
 
-    const clone = e.target.cloneNode(true);
+    const clone = isBlock.cloneNode(true);
     clone.classList.remove("block");
     clone.classList.add("code-block");
 
     document.body.append(clone);
     draggingBlock = clone;
 
-    const cordOriginalBlock = e.target.getBoundingClientRect();
+    const cordOriginalBlock = isBlock.getBoundingClientRect();
 
     clickInsideBLockX = e.clientX - cordOriginalBlock.left;
     clickInsideBLockY = e.clientY - cordOriginalBlock.top;
@@ -94,12 +110,16 @@ document.addEventListener("pointermove", (e) => {
     draggingBlock.style.top = e.clientY - clickInsideBLockY + 'px';
 
     const branch = getBranchUnderCursor(e.clientX, e.clientY); 
+    const nextBlock = getNextBlockUnderCursor(e.clientX,e.clientY);
 
-    if(branch !== currentBranch){
-        if(currentBranch) currentBranch.classList.remove('highlight');
-        if(branch) branch.classList.add('highlight');
-        currentBranch = branch;
+    const newTarget = branch || nextBlock;
+
+    if (newTarget !== currentTarget) {
+        if (currentTarget) currentTarget.classList.remove('highlight');
+        if (newTarget) newTarget.classList.add('highlight');
+        currentTarget = newTarget;
     }
+
 });
 
 document.addEventListener("pointerup", (e) => {
@@ -122,9 +142,14 @@ document.addEventListener("pointerup", (e) => {
     if(!isEditor){
         draggingBlock.remove();
     }
-    else if(branch){
-        branch.appendChild(draggingBlock);
+    else if(currentTarget){
+        currentTarget.appendChild(draggingBlock);
         draggingBlock.style.position = 'static';
+        draggingBlock.style.left = 'auto';
+        draggingBlock.style.top = 'auto';
+        draggingBlock.style.margin = '0';
+        currentTarget.classList.remove('highlight');
+        currentTarget = null;
     }
     else{
         scene.appendChild(draggingBlock);
@@ -135,10 +160,6 @@ document.addEventListener("pointerup", (e) => {
         draggingBlock.style.left = (sceneClickX - clickInsideBLockX) + 'px';
         draggingBlock.style.top = (sceneClickY - clickInsideBLockY) + 'px';
         draggingBlock.style.position = 'absolute';
-    }
-    if (currentBranch) { 
-        currentBranch.classList.remove('highlight'); 
-        currentBranch = null; 
     }
     draggingBlock = null;
     draggingFromScene = false;
