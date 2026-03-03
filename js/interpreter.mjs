@@ -6,20 +6,26 @@ function getBlockData(blockElement){
     return {type,value,childrens}
 }
 
-const block = document.querySelector(".workspace__numberLiteral-block");
+// const block = document.querySelector(".workspace__numberLiteral-block");
 
 let memory = {};
 
-block.addEventListener('input', () => {
-    const ob = getBlockData(block);
-    console.log(ob); 
-});
+// block.addEventListener('input', () => {
+//     const ob = getBlockData(block);
+//     console.log(ob); 
+// });
 
 
 export function collectData(block){
     const element = {}
-    
-    if(block.classList.contains("workspace__numberLiteral-block")){
+
+    if (block.classList.contains("workspace__start-block")) {
+        element.type = "start";
+    }
+    else if(block.classList.contains("workspace__print-block")){
+        element.type = "print";
+    }
+    else if(block.classList.contains("workspace__numberLiteral-block")){
         element.type = "number";
     }
     else if(block.classList.contains("workspace__assign-block")){
@@ -75,7 +81,7 @@ function executeCurrentBlock(node){
             right = run(node.childrens[1]);
             return left + right;
         case "var":
-            return memory[node.value] || 0; // 0 - для того, чтобы арифм. операции не ломались
+            return memory[node.value] || 0; 
         case "assign":
             left = node.childrens[0];
     
@@ -91,8 +97,13 @@ function executeCurrentBlock(node){
             const print = run(node.childrens[0]);
 
             const output = document.querySelector('.workspace__output');
-            output.innerHTML += `<div>> ${valToPrint}</div>`;
+            if (output) {
+                output.innerHTML += `<div> ${print}</div>`;
+                output.scrollTop = output.scrollHeight;
+            }
             return print;
+        case "start":
+            return null;
         default:
             return null;
     }
@@ -100,28 +111,38 @@ function executeCurrentBlock(node){
 
 
 function run(node){
-    if(!node) return 0; 
-    
-    let result = executeCurrentBlock(node);
+    let currentNode = node;
+    let lastResult = 0;
 
-    if(node.next){
-        return run(node.next);
+    while (currentNode) {
+        lastResult = executeCurrentBlock(currentNode);
+
+        currentNode = currentNode.next;
     }
-    return result;  
+
+    return lastResult;
 }
 const runButton = document.querySelector('#run-btn');
 
 runButton.addEventListener('click',() => {
-    const firstBlock = document.querySelector('.code-block');
-    console.log(firstBlock);
+    const startBlock = document.querySelector('.workspace__scene .workspace__start-block.code-block');
+
+    if (!startBlock) {
+        console.warn("Программа не начата, т.к. нет блока START!");
+        return;
+    }
+
+    const data = collectData(startBlock);
+
+    memory = {};
     
-    if(firstBlock){
-        const data = collectData(firstBlock);
-        console.log("Data tree:", data)
-        const result = run(data);
-        console.log("Результат: ", result);
+    if(data.next){
+        // console.log("Начало программы");
+        run(data.next);
+        // console.log("Конец программы");
     }
     else{
-        console.log("На сцене пусто");
+        console.log("Start пуст");
     }
+    console.log(memory)
 })

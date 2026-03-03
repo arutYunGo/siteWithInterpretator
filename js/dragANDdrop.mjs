@@ -1,16 +1,16 @@
 import {zoomState, ChangeTransform} from './code-editorZOOM.mjs';
 import {collectData} from './interpreter.mjs';
+
 const palette = document.querySelector(".workspace__block-palette");
 const editor = document.querySelector(".workspace__code-editor");
 const scene = document.querySelector(".workspace__scene");
 const viewport = document.querySelector(".workspace__viewport");
+
 let draggingBlock = null;
 let currentTarget = null;
 
 let clickInsideBLockX = 0;
 let clickInsideBLockY = 0;    
-
-let draggingFromScene = false;
 
 let isPanning = false;
 let lastMouseX = 0;
@@ -80,7 +80,6 @@ viewport.addEventListener("pointerdown", (e) => {
     if(!block) return;
 
     draggingBlock = block;
-    draggingFromScene = (block.parentNode === scene);
 
     const cordOriginalBlock = block.getBoundingClientRect();
 
@@ -162,7 +161,6 @@ document.addEventListener("pointerup", (e) => {
         draggingBlock.style.position = 'absolute';
     }
     draggingBlock = null;
-    draggingFromScene = false;
 });
 
 ChangeTransform();

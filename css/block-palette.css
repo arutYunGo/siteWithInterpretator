@@ -113,8 +113,11 @@
     border: 0px;
 }
 
-.workspace__assign-block{
+.workspace__assign-block, .workspace__print-block{
     display: flex;
     flex-direction: column;
     padding: 0;
+}
+.workspace__print-block{
+    background-color: rgba(219, 60, 219, 0.667);
 }
