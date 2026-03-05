@@ -19,6 +19,7 @@ let memory = {};
 export function collectData(block){
     const element = {}
 
+    // literals
     if (block.classList.contains("workspace__start-block")) {
         element.type = "start";
     }
@@ -37,9 +38,6 @@ export function collectData(block){
     else if(block.classList.contains("workspace__assign-block")){
         element.type = "assign";
     }
-    else if(block.classList.contains("workspace__plus-block")){
-        element.type = "plus";
-    }
     else if(block.classList.contains("workspace__variable-block")){
         element.type = "var";
     }
@@ -55,16 +53,63 @@ export function collectData(block){
         const elseSlot = block.querySelector(".workspace__next-block.else");
         element.elseBranch = (elseSlot && elseSlot.firstElementChild) ? collectData(elseSlot.firstElementChild) : null;
     }
+    // math operators
+    else if(block.classList.contains("workspace__plus-block")){
+        element.type = "plus";
+    }
+    else if(block.classList.contains("workspace__minus-block")){
+        element.type = "minus";
+    }
+    else if(block.classList.contains("workspace__multiply-block")){
+        element.type = "multiply";
+    }
+    else if(block.classList.contains("workspace__divide-block")){
+        element.type = "divide";
+    }
+    else if(block.classList.contains("workspace__intDivide-block")){
+        element.type = "intDivide";
+    }
+    else if(block.classList.contains("workspace__mod-block")){
+        element.type = "mod";
+    }
+    else if(block.classList.contains("workspace__power-block")){
+        element.type = "power";
+    }
     else if(block.classList.contains("workspace__eq-block")){
         element.type = "eq";
     }
+    else if(block.classList.contains("workspace__neq-block")){
+        element.type = "neq";
+    }
+    else if(block.classList.contains("workspace__lt-block")){
+        element.type = "lt";
+    }
+    else if(block.classList.contains("workspace__gt-block")){
+        element.type = "gt";
+    }
+    else if(block.classList.contains("workspace__lte-block")){
+        element.type = "lte";
+    }
+    else if(block.classList.contains("workspace__gte-block")){
+        element.type = "gte";
+    }
+    else if(block.classList.contains("workspace__and-block")){
+        element.type = "and";
+    }
+    else if(block.classList.contains("workspace__or-block")){
+        element.type = "or";
+    }
+    else if(block.classList.contains("workspace__not-block")){
+        element.type = "not";
+    }
 
     if(block.classList.contains("with-input")){
+        const valueInput = block.querySelector(".workspace__input").value;
         if(element.type == "number"){
-            element.value = Number(block.querySelector(".workspace__input").value);
+            element.value = Number(valueInput);
         }
         else{
-            element.value = block.querySelector(".workspace__input").value;
+            element.value = valueInput;
         }
     }
 
@@ -122,11 +167,37 @@ function executeCurrentBlock(node){
         case "plus":
             left = run(node.childrens[0]);
             right = run(node.childrens[1]);
-            if (typeof(left) !== typeof(right)) {
-                console.error("ошибка: типы аргументов должны совпадать");
-                return null
-            }
+            // if(Number(left.value) != Number(right.value)){
+            //     if (typeof(left) !== typeof(right)) {
+            //         console.error("ошибка: типы аргументов должны совпадать");
+            //         return null
+            //     }
+            // }
             return left + right;
+        case "minus":
+            left = run(node.childrens[0]);
+            right = run(node.childrens[1]);
+            return left - right;
+        case "multiply":
+            left = run(node.childrens[0]);
+            right = run(node.childrens[1]);
+            return left * right;
+        case "divide":
+            left = run(node.childrens[0]);
+            right = run(node.childrens[1]);
+            return left / right;
+        case "intDivide":
+            left = run(node.childrens[0]);
+            right = run(node.childrens[1]);
+            return Math.trunc(left / right);
+        case "mod":
+            left = run(node.childrens[0]);
+            right = run(node.childrens[1]);
+            return left % right;
+        case "power":
+            left = run(node.childrens[0]);
+            right = run(node.childrens[1]);
+            return left ** right;
         case "var":
             return memory[node.value] || 0; 
         case "assign":
@@ -176,10 +247,59 @@ function executeCurrentBlock(node){
             left = run(node.childrens[0]);
             right = run(node.childrens[1]);
             return left == right ? true : false;
+        case "neq":
+            left = run(node.childrens[0]);
+            right = run(node.childrens[1]);
+            return left != right ? true : false;
+        case "lt":
+            left = run(node.childrens[0]);
+            right = run(node.childrens[1]);
+            return left < right ? true : false;
+        case "gt":
+            left = run(node.childrens[0]);
+            right = run(node.childrens[1]);
+            return left > right ? true : false;
+        case "lte":
+            left = run(node.childrens[0]);
+            right = run(node.childrens[1]);
+            return left <= right ? true : false;
+        case "gte":
+            left = run(node.childrens[0]);
+            right = run(node.childrens[1]);
+            return left >= right ? true : false;
+        case "and":
+            left = run(node.childrens[0]);
+            right = run(node.childrens[1]);
+            if(left && right){
+                return true;
+            }
+            else{
+                return false;
+            }
+        case "or":
+            left = run(node.childrens[0]);
+            right = run(node.childrens[1]);
+            if(left || right){
+                return true;
+            }
+            else{
+                return false;
+            }
+        case "not":
+            right = run(node.childrens[0])
+            if(right){
+                return false;
+            }
+            else{
+                return true;
+            }
         default:
             return null;
     }
 }
+
+// При ошибках сделать подсвечивание и красном и что нибудь, что будет блокировать всю программу или, если в start имеется подсвеченный красный блок
+// то ему нельзя выполняться что то такое
 
 
 function run(node){

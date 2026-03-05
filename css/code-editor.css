@@ -61,11 +61,13 @@
 .workspace__if-block > .then{
     border: 2px solid black;
     background-color: white;
+    width: 90%;
 }
 
 .workspace__if-block >.else{
     border: 2px solid black;
     background-color: white;
+    width: 90%;
 }
 
 .workspace__if-block{
@@ -73,4 +75,6 @@
     border-bottom: 1px solid black;
     opacity: 0.8;
 }
+
+
 
