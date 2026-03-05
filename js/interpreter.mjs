@@ -1,10 +1,10 @@
-function getBlockData(blockElement){
-    const input = blockElement.querySelector(".workspace__input");
-    const childrens = [];
-    const type = blockElement.firstElementChild.textContent;
-    const value = input.value;
-    return {type,value,childrens}
-}
+// function getBlockData(blockElement){
+//     const input = blockElement.querySelector(".workspace__input");
+//     const childrens = [];
+//     const type = blockElement.firstElementChild.textContent;
+//     const value = input.value;
+//     return {type,value,childrens}
+// }
 
 // const block = document.querySelector(".workspace__numberLiteral-block");
 
@@ -28,6 +28,12 @@ export function collectData(block){
     else if(block.classList.contains("workspace__numberLiteral-block")){
         element.type = "number";
     }
+    else if(block.classList.contains("workspace__stringLiteral-block")){
+        element.type = "string";
+    }
+    else if(block.classList.contains("workspace__boolLiteral-block")){
+        element.type = "boolean";
+    }
     else if(block.classList.contains("workspace__assign-block")){
         element.type = "assign";
     }
@@ -44,16 +50,10 @@ export function collectData(block){
             element.condition = executeCurrentBlock(collectData(condBranch.firstElementChild));
         }
         const thenSlot = block.querySelector(".workspace__next-block.then");
-            // Передаем в collectData только если внутри КТО-ТО ЕСТЬ
-        element.thenBranch = (thenSlot && thenSlot.firstElementChild) 
-            ? collectData(thenSlot.firstElementChild) 
-            : null;
+        element.thenBranch = (thenSlot && thenSlot.firstElementChild) ? collectData(thenSlot.firstElementChild) : null;
 
-            // Ветка ELSE
         const elseSlot = block.querySelector(".workspace__next-block.else");
-        element.elseBranch = (elseSlot && elseSlot.firstElementChild) 
-            ? collectData(elseSlot.firstElementChild) 
-            : null;
+        element.elseBranch = (elseSlot && elseSlot.firstElementChild) ? collectData(elseSlot.firstElementChild) : null;
     }
     else if(block.classList.contains("workspace__eq-block")){
         element.type = "eq";
@@ -106,7 +106,19 @@ function executeCurrentBlock(node){
     let left,right;
     switch(node.type){
         case "number":
+        case "string":
             return node.value;
+        case "boolean":
+            if(node.value != "true" || node.value != "false" || node.value != "1" || node.value != "0"){
+                console.error("ошибка: булеан может быть только true или false(1 или 0)");
+                return null;
+            }
+            if(node.value == "true" || node.value == "1"){
+                return true;
+            }
+            else if(node.value = "false" || node.value == "0"){
+                return false;
+            }
         case "plus":
             left = run(node.childrens[0]);
             right = run(node.childrens[1]);
