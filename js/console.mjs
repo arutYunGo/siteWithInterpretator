@@ -2,6 +2,7 @@ const output = document.querySelector(".workspace__output");
 const input = document.querySelector(".workspace__input");
 
 input.addEventListener("keydown",(e) => {
+    console.log("got here")
     if(e.key !== "Enter") return;
     const cmd = input.value;
     

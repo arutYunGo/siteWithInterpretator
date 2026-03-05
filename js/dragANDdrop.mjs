@@ -70,7 +70,7 @@ palette.addEventListener("pointerdown", (e) => {
 viewport.addEventListener("pointerdown", (e) => {
 
     const block = e.target.closest(".code-block");
-    if(!block && (e.button === 0 || e.button === 1)){
+    if(!block && (e.button === 0)){
         e.preventDefault();
         isPanning = true;
         lastMouseX = e.clientX;
@@ -111,7 +111,7 @@ document.addEventListener("pointermove", (e) => {
     const branch = getBranchUnderCursor(e.clientX, e.clientY); 
     const nextBlock = getNextBlockUnderCursor(e.clientX,e.clientY);
 
-    const newTarget = branch || nextBlock;
+    const newTarget = nextBlock || branch;
 
     if (newTarget !== currentTarget) {
         if (currentTarget) currentTarget.classList.remove('highlight');
@@ -124,12 +124,17 @@ document.addEventListener("pointermove", (e) => {
 document.addEventListener("pointerup", (e) => {
     isPanning = false;
     if(!draggingBlock) return;
-    console.log(JSON.stringify(collectData(draggingBlock), null, 2))
+
+    try {
+        // Пробуем собрать данные. Если упадет — перейдет в catch
+        console.log(JSON.stringify(collectData(draggingBlock), null, 2));
+    } catch (err) {
+        console.warn("Ошибка в collectData:", err.message);
+    } 
 
     draggingBlock.style.pointerEvents = "auto";
     draggingBlock.style.zIndex = "";
 
-    const branch = getBranchUnderCursor(e.clientX, e.clientY);
     const cordEditor = viewport.getBoundingClientRect();
     
     let isEditor = false;
@@ -161,6 +166,7 @@ document.addEventListener("pointerup", (e) => {
         draggingBlock.style.position = 'absolute';
     }
     draggingBlock = null;
+    currentTarget = null;
 });
 
 ChangeTransform();

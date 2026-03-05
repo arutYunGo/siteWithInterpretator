@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="css/code-editor.css">
     <link rel="stylesheet" href="css/block-palette.css">
     <link rel="stylesheet" href="css/block-categories.css">
-    <script src="js/console.mjs" defer></script>
+    <script src="js/console.mjs" type = "module"></script>
     <script src = "js/dragANDdrop.mjs" type = "module"></script>
     <script src = "js/code-editorZOOM.mjs" type = "module"></script>
     <script src="js/interpreter.mjs" type = "module"></script>
@@ -26,9 +26,10 @@
                 <span>BLOCK</span>
                 унь</h1>
         </div>
-        <div>
+        <div class = "buttons">
             <!-- reset -->
-            <button id = "run-btn" type = "button"></button>
+            <button type = "reset" id ="rst-btn">RESET</button>
+            <button id = "run-btn" type = "button">START</button>
         </div>
     </header>
     <section class = "workspace">
@@ -93,6 +94,19 @@
                     <div class = "workspace__branch" data-branch></div> 
                 </div>
                 <div class="workspace__next-block"></div> 
+            </div>
+
+            <div class = "workspace__if-block block with-branch">
+                <div class = "workspace__block-content with-branch">
+                    <div style = "font-weight: bold;">IF</div>
+                    <div class = "workspace__branch" data-branch></div> 
+                </div>
+                <div style ="padding-right: 52px;">then</div>
+                <div class="workspace__next-block then"></div> 
+                <div style ="padding-right: 52px;">else</div>
+                <div class="workspace__next-block else"></div> 
+
+                <div class="workspace__next-block next-if"></div> 
             </div>
 
             <div class="workspace__category-2 category" id="arrays">Arrays</div>

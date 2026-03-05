@@ -37,6 +37,27 @@ export function collectData(block){
     else if(block.classList.contains("workspace__variable-block")){
         element.type = "var";
     }
+    else if(block.classList.contains("workspace__if-block")){
+        element.type = "if";
+        const condBranch = block.querySelector(".workspace__branch");
+        if(condBranch && condBranch.firstElementChild){
+            element.condition = executeCurrentBlock(collectData(condBranch.firstElementChild));
+        }
+        const thenSlot = block.querySelector(".workspace__next-block.then");
+            // Передаем в collectData только если внутри КТО-ТО ЕСТЬ
+        element.thenBranch = (thenSlot && thenSlot.firstElementChild) 
+            ? collectData(thenSlot.firstElementChild) 
+            : null;
+
+            // Ветка ELSE
+        const elseSlot = block.querySelector(".workspace__next-block.else");
+        element.elseBranch = (elseSlot && elseSlot.firstElementChild) 
+            ? collectData(elseSlot.firstElementChild) 
+            : null;
+    }
+    else if(block.classList.contains("workspace__eq-block")){
+        element.type = "eq";
+    }
 
     if(block.classList.contains("with-input")){
         if(element.type == "number"){
@@ -62,10 +83,20 @@ export function collectData(block){
             return null;
         } 
     });
-    const nextBlock = block.querySelector(".workspace__next-block");
 
-    if(nextBlock && nextBlock.firstElementChild){
-        element.next = collectData(nextBlock.firstElementChild);
+    if(element.type != "if"){
+        const nextBlock = block.querySelector(".workspace__next-block");
+
+        if(nextBlock && nextBlock.firstElementChild){
+            element.next = collectData(nextBlock.firstElementChild);
+        }
+    }
+    else{
+        const nextBlock = block.querySelector(".workspace__next-block.next-if");
+
+        if(nextBlock && nextBlock.firstElementChild){
+            element.next = collectData(nextBlock.firstElementChild);
+        }
     }
 
     return element;
@@ -79,6 +110,10 @@ function executeCurrentBlock(node){
         case "plus":
             left = run(node.childrens[0]);
             right = run(node.childrens[1]);
+            if (typeof(left) !== typeof(right)) {
+                console.error("ошибка: типы аргументов должны совпадать");
+                return null
+            }
             return left + right;
         case "var":
             return memory[node.value] || 0; 
@@ -94,9 +129,12 @@ function executeCurrentBlock(node){
             memory[left.value] = right;
             return right;
         case "print":
+            const output = document.querySelector('.workspace__output');
+            if(node.childrens == 0){
+                return null;
+            }
             const print = run(node.childrens[0]);
 
-            const output = document.querySelector('.workspace__output');
             if (output) {
                 output.innerHTML += `<div> ${print}</div>`;
                 output.scrollTop = output.scrollHeight;
@@ -104,6 +142,28 @@ function executeCurrentBlock(node){
             return print;
         case "start":
             return null;
+        case "if":
+            if(node.condition != true && node.condition != false){
+                console.error("ошибка - нет условия");
+                return null;
+            }
+            const conditionResult = node.condition;
+            console.log(conditionResult);
+            if(conditionResult){
+                if(node.thenBranch){
+                    run(node.thenBranch);
+                }
+            }
+            else{
+                if(node.elseBranch){
+                    run(node.elseBranch);
+                }
+            }
+            return null;
+        case "eq":
+            left = run(node.childrens[0]);
+            right = run(node.childrens[1]);
+            return left == right ? true : false;
         default:
             return null;
     }
@@ -145,4 +205,10 @@ runButton.addEventListener('click',() => {
         console.log("Start пуст");
     }
     console.log(memory)
+})
+
+const rstButton = document.querySelector('#rst-btn');
+
+rstButton.addEventListener('click',() =>{
+    location.reload();
 })
