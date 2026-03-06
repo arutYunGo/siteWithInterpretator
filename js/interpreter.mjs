@@ -18,7 +18,7 @@ let memory = {};
 
 export function collectData(block){
     const element = {}
-
+    let condBranch = null;
     // literals
     if (block.classList.contains("workspace__start-block")) {
         element.type = "start";
@@ -43,7 +43,7 @@ export function collectData(block){
     }
     else if(block.classList.contains("workspace__if-block")){
         element.type = "if";
-        const condBranch = block.querySelector(".workspace__branch");
+        condBranch = block.querySelector(".workspace__branch");
         if(condBranch && condBranch.firstElementChild){
             element.condition = executeCurrentBlock(collectData(condBranch.firstElementChild));
         }
@@ -52,6 +52,15 @@ export function collectData(block){
 
         const elseSlot = block.querySelector(".workspace__next-block.else");
         element.elseBranch = (elseSlot && elseSlot.firstElementChild) ? collectData(elseSlot.firstElementChild) : null;
+    }
+    else if(block.classList.contains("workspace__while-block")){
+        element.type = "while";
+        // condBranch = block.querySelector(".workspace__branch");
+        // if(condBranch && condBranch.firstElementChild){
+        //     element.condition = executeCurrentBlock(collectData(condBranch.firstElementChild));
+        // }
+        const loopBodySlot = block.querySelector(".workspace__next-block.loop-body");
+        element.bodyBranch = (loopBodySlot && loopBodySlot.firstElementChild) ? collectData(loopBodySlot.firstElementChild) : null;
     }
     // math operators
     else if(block.classList.contains("workspace__plus-block")){
@@ -129,15 +138,22 @@ export function collectData(block){
         } 
     });
 
-    if(element.type != "if"){
+    if(element.type != "if" && element.type != "while"){
         const nextBlock = block.querySelector(".workspace__next-block");
 
         if(nextBlock && nextBlock.firstElementChild){
             element.next = collectData(nextBlock.firstElementChild);
         }
     }
-    else{
+    else if(element.type == "if"){
         const nextBlock = block.querySelector(".workspace__next-block.next-if");
+
+        if(nextBlock && nextBlock.firstElementChild){
+            element.next = collectData(nextBlock.firstElementChild);
+        }
+    }
+    else if(element.type == "while"){
+        const nextBlock = block.querySelector(".workspace__next-block.next-while");
 
         if(nextBlock && nextBlock.firstElementChild){
             element.next = collectData(nextBlock.firstElementChild);
@@ -199,6 +215,7 @@ function executeCurrentBlock(node){
             right = run(node.childrens[1]);
             return left ** right;
         case "var":
+            console.log("var: " + memory[node.value]);
             return memory[node.value] || 0; 
         case "assign":
             left = node.childrens[0];
@@ -208,7 +225,6 @@ function executeCurrentBlock(node){
                 return null; 
             }
             right = run(node.childrens[1]);
-            
             memory[left.value] = right;
             return right;
         case "print":
@@ -241,6 +257,21 @@ function executeCurrentBlock(node){
                 if(node.elseBranch){
                     run(node.elseBranch);
                 }
+            }
+            return null;
+        case "while":
+            node.condition = executeCurrentBlock(node.childrens[0]);
+            if(node.condition !== true && node.condition !== false){
+                console.error("ошибка - нет условия");
+                return null;
+            }
+            console.log(node.condition);
+            while(node.condition){
+                if(node.bodyBranch){
+                    run(node.bodyBranch);
+                }
+                node.condition = executeCurrentBlock(node.childrens[0]);
+                console.log("в while " + node.condition);
             }
             return null;
         case "eq":
@@ -305,10 +336,10 @@ function executeCurrentBlock(node){
 function run(node){
     let currentNode = node;
     let lastResult = 0;
+    
 
     while (currentNode) {
         lastResult = executeCurrentBlock(currentNode);
-
         currentNode = currentNode.next;
     }
 

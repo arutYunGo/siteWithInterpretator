@@ -113,7 +113,7 @@
     border: 0px;
 }
 
-.workspace__assign-block, .workspace__print-block, .workspace__if-block{
+.workspace__assign-block, .workspace__print-block, .workspace__if-block, .workspace__while-block{
     display: flex;
     flex-direction: column;
     padding: 0;

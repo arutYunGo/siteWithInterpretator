@@ -54,6 +54,21 @@
             </section>
         </section>
         <section class="workspace__block-palette container">
+
+            <div class="workspace__start-block block">
+                <div class="workspace__block-content">
+                    <div>START PROGRAMM</div>
+                </div>
+                <div class="workspace__next-block"></div>
+            </div>
+
+            <div class="workspace__print-block block with-branch">
+                <div class = "workspace__block-content with-branch">
+                    Print
+                    <div class = "workspace__branch" data-branch></div> 
+                </div>
+                <div class="workspace__next-block"></div> 
+            </div>
             
             <div class="workspace__category-1 category" id="literals">Literals & Variables</div>
             <div class="workspace__numberLiteral-block block with-input">
@@ -81,21 +96,15 @@
                 <div class = "workspace__next-block"></div> 
             </div>
 
-            <div class="workspace__start-block block">
-                <div class="workspace__block-content">
-                    <div>START PROGRAMM</div>
-                </div>
-                <div class="workspace__next-block"></div>
-            </div>
+            <div class="workspace__category-2 category" id="arrays">Arrays</div>
+            <div class="workspace__array-block block">Создать список</div>
+            <div class="workspace__at-block block">Элемент по индексу</div>
+            <div class="workspace__set_at-block block">Изменить элемент</div>
+            <div class="workspace__insert_at-block block">Вставить элемент</div>
+            <div class="workspace__erase_at-block block">Удалить элемент</div>
+            <div class="workspace__len-block block">Длина списка</div>
 
-            <div class="workspace__print-block block with-branch">
-                <div class = "workspace__block-content with-branch">
-                    Print
-                    <div class = "workspace__branch" data-branch></div> 
-                </div>
-                <div class="workspace__next-block"></div> 
-            </div>
-
+            <div class="workspace__category-3 category" id="control">Control Flow</div>
             <div class = "workspace__if-block block with-branch">
                 <div class = "workspace__block-content with-branch">
                     <div style = "font-weight: bold;">IF</div>
@@ -108,14 +117,16 @@
 
                 <div class="workspace__next-block next-if"></div> 
             </div>
+            <div class="workspace__while-block block">
+                <div class = "workspace__block-content with-branch">
+                    <div style = "font-weight: bold;">While</div>
+                    <div class = "workspace__branch" data-branch></div> 
+                </div>
+                <div style ="padding-bottom: 10px;">Loop-body</div>
+                <div class="workspace__next-block loop-body"></div> 
 
-            <div class="workspace__category-2 category" id="arrays">Arrays</div>
-            <div class="workspace__array-block block">Создать список</div>
-            <div class="workspace__at-block block">Элемент по индексу</div>
-            <div class="workspace__set_at-block block">Изменить элемент</div>
-            <div class="workspace__insert_at-block block">Вставить элемент</div>
-            <div class="workspace__erase_at-block block">Удалить элемент</div>
-            <div class="workspace__len-block block">Длина списка</div>
+                <div class="workspace__next-block next-while"></div> 
+            </div>
 
             <div class="workspace__category-4 category" id="math">Math Operators</div>
             <div class="workspace__plus-block block with-branch">
