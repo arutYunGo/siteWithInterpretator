@@ -18,7 +18,6 @@ let memory = {};
 
 export function collectData(block){
     const element = {}
-    let condBranch = null;
     // literals
     if (block.classList.contains("workspace__start-block")) {
         element.type = "start";
@@ -43,10 +42,10 @@ export function collectData(block){
     }
     else if(block.classList.contains("workspace__if-block")){
         element.type = "if";
-        condBranch = block.querySelector(".workspace__branch");
-        if(condBranch && condBranch.firstElementChild){
-            element.condition = executeCurrentBlock(collectData(condBranch.firstElementChild));
-        }
+        // condBranch = block.querySelector(".workspace__branch");
+        // if(condBranch && condBranch.firstElementChild){
+        //     element.condition = executeCurrentBlock(collectData(condBranch.firstElementChild));
+        // }
         const thenSlot = block.querySelector(".workspace__next-block.then");
         element.thenBranch = (thenSlot && thenSlot.firstElementChild) ? collectData(thenSlot.firstElementChild) : null;
 
@@ -111,6 +110,25 @@ export function collectData(block){
     else if(block.classList.contains("workspace__not-block")){
         element.type = "not";
     }
+    // массивы
+    else if(block.classList.contains("workspace__create-list-block")){
+        element.type = "createList";
+    }
+    else if(block.classList.contains("workspace__set-list-block")){
+        element.type = "setList";
+    }
+    else if(block.classList.contains("workspace__push-list-block")){
+        element.type = "pushList";
+    }
+    else if(block.classList.contains("workspace__get-list-block")){
+        element.type = "getList";
+    }
+    else if(block.classList.contains("workspace__length-list-block")){
+        element.type = "lengthList";
+    }
+    else if(block.classList.contains("workspace__list-constructor-block")){
+        element.type = "listConstructor";
+    }
 
     if(block.classList.contains("with-input")){
         const valueInput = block.querySelector(".workspace__input").value;
@@ -130,8 +148,8 @@ export function collectData(block){
         }
     });
     element.childrens = straightBranches.map((el) => {
-        if(el.firstElementChild){
-            return collectData(el.firstElementChild);
+        if(el.querySelector(".code-block")){
+            return collectData(el.querySelector(".code-block"));
         }
         else{
             return null;
@@ -177,12 +195,12 @@ function executeCurrentBlock(node){
             if(node.value == "true" || node.value == "1"){
                 return true;
             }
-            else if(node.value = "false" || node.value == "0"){
+            else if(node.value == "false" || node.value == "0"){
                 return false;
             }
         case "plus":
-            left = run(node.childrens[0]);
-            right = run(node.childrens[1]);
+            left = executeCurrentBlock(node.childrens[0]);
+            right = executeCurrentBlock(node.childrens[1]);
             // if(Number(left.value) != Number(right.value)){
             //     if (typeof(left) !== typeof(right)) {
             //         console.error("ошибка: типы аргументов должны совпадать");
@@ -191,28 +209,28 @@ function executeCurrentBlock(node){
             // }
             return left + right;
         case "minus":
-            left = run(node.childrens[0]);
-            right = run(node.childrens[1]);
+            left = executeCurrentBlock(node.childrens[0]);
+            right = executeCurrentBlock(node.childrens[1]);
             return left - right;
         case "multiply":
-            left = run(node.childrens[0]);
-            right = run(node.childrens[1]);
+            left = executeCurrentBlock(node.childrens[0]);
+            right = executeCurrentBlock(node.childrens[1]);
             return left * right;
         case "divide":
-            left = run(node.childrens[0]);
-            right = run(node.childrens[1]);
+            left = executeCurrentBlock(node.childrens[0]);
+            right = executeCurrentBlock(node.childrens[1]);
             return left / right;
         case "intDivide":
-            left = run(node.childrens[0]);
-            right = run(node.childrens[1]);
+            left = executeCurrentBlock(node.childrens[0]);
+            right = executeCurrentBlock(node.childrens[1]);
             return Math.trunc(left / right);
         case "mod":
-            left = run(node.childrens[0]);
-            right = run(node.childrens[1]);
+            left = executeCurrentBlock(node.childrens[0]);
+            right = executeCurrentBlock(node.childrens[1]);
             return left % right;
         case "power":
-            left = run(node.childrens[0]);
-            right = run(node.childrens[1]);
+            left = executeCurrentBlock(node.childrens[0]);
+            right = executeCurrentBlock(node.childrens[1]);
             return left ** right;
         case "var":
             console.log("var: " + memory[node.value]);
@@ -224,7 +242,7 @@ function executeCurrentBlock(node){
                 console.error("ошибка - должна быть переменная");
                 return null; 
             }
-            right = run(node.childrens[1]);
+            right = executeCurrentBlock(node.childrens[1]);
             memory[left.value] = right;
             return right;
         case "print":
@@ -232,7 +250,7 @@ function executeCurrentBlock(node){
             if(node.childrens == 0){
                 return null;
             }
-            const print = run(node.childrens[0]);
+            const print = executeCurrentBlock(node.childrens[0]);
 
             if (output) {
                 output.innerHTML += `<div> ${print}</div>`;
@@ -242,65 +260,53 @@ function executeCurrentBlock(node){
         case "start":
             return null;
         case "if":
-            if(node.condition != true && node.condition != false){
-                console.error("ошибка - нет условия");
-                return null;
+            const condition = node.childrens[0] ? executeCurrentBlock(node.childrens[0]) : null;
+            
+            if(condition === true){
+                if(node.thenBranch) run(node.thenBranch);
             }
-            const conditionResult = node.condition;
-            console.log(conditionResult);
-            if(conditionResult){
-                if(node.thenBranch){
-                    run(node.thenBranch);
-                }
-            }
-            else{
-                if(node.elseBranch){
-                    run(node.elseBranch);
-                }
+            else {
+                if(node.elseBranch) run(node.elseBranch);
             }
             return null;
-        case "while":
-            node.condition = executeCurrentBlock(node.childrens[0]);
-            if(node.condition !== true && node.condition !== false){
-                console.error("ошибка - нет условия");
-                return null;
-            }
-            console.log(node.condition);
-            while(node.condition){
+        case "while": {
+            let condition = node.childrens[0] ? executeCurrentBlock(node.childrens[0]) : false;
+            
+            while(condition === true){
                 if(node.bodyBranch){
                     run(node.bodyBranch);
                 }
-                node.condition = executeCurrentBlock(node.childrens[0]);
-                console.log("в while " + node.condition);
+                condition = node.childrens[0] ? executeCurrentBlock(node.childrens[0]) : false;
             }
             return null;
+        }
         case "eq":
-            left = run(node.childrens[0]);
-            right = run(node.childrens[1]);
+            left = executeCurrentBlock(node.childrens[0]);
+            right = executeCurrentBlock(node.childrens[1]);
             return left == right ? true : false;
         case "neq":
-            left = run(node.childrens[0]);
-            right = run(node.childrens[1]);
+            left = executeCurrentBlock(node.childrens[0]);
+            right = executeCurrentBlock(node.childrens[1]);
             return left != right ? true : false;
         case "lt":
-            left = run(node.childrens[0]);
-            right = run(node.childrens[1]);
+            left = executeCurrentBlock(node.childrens[0]);
+            right = executeCurrentBlock(node.childrens[1]);
             return left < right ? true : false;
         case "gt":
-            left = run(node.childrens[0]);
-            right = run(node.childrens[1]);
+            left = executeCurrentBlock(node.childrens[0]);
+            right = executeCurrentBlock(node.childrens[1]);
             return left > right ? true : false;
         case "lte":
-            left = run(node.childrens[0]);
-            right = run(node.childrens[1]);
+            left = executeCurrentBlock(node.childrens[0]);
+            right = executeCurrentBlock(node.childrens[1]);
             return left <= right ? true : false;
         case "gte":
-            left = run(node.childrens[0]);
-            right = run(node.childrens[1]);
+            left = executeCurrentBlock(node.childrens[0]);
+            right = executeCurrentBlock(node.childrens[1]);
             return left >= right ? true : false;
         case "and":
-            left = run(node.childrens[0]);
-            right = run(node.childrens[1]);
+            left = executeCurrentBlock(node.childrens[0]);
+            right = executeCurrentBlock(node.childrens[1]);
             if(left && right){
                 return true;
             }
@@ -308,8 +314,8 @@ function executeCurrentBlock(node){
                 return false;
             }
         case "or":
-            left = run(node.childrens[0]);
-            right = run(node.childrens[1]);
+            left = executeCurrentBlock(node.childrens[0]);
+            right = executeCurrentBlock(node.childrens[1]);
             if(left || right){
                 return true;
             }
@@ -317,13 +323,49 @@ function executeCurrentBlock(node){
                 return false;
             }
         case "not":
-            right = run(node.childrens[0])
+            right = executeCurrentBlock(node.childrens[0])
             if(right){
                 return false;
             }
             else{
                 return true;
             }
+        case "createList":
+            return [];
+        case "listConstructor":
+            return node.childrens.map(child => child ? executeCurrentBlock(child) : null);
+        case "setList": { 
+            const list = memory[node.value];
+            const idx = node.childrens[0] ? executeCurrentBlock(node.childrens[0]) : null;
+            const val = node.childrens[1] ? executeCurrentBlock(node.childrens[1]) : null;
+
+            if (Array.isArray(list) && idx !== null) {
+                list[Number(idx)] = val;
+            }
+            return list;
+        }
+        case "pushList":{
+            const list = memory[node.value];
+            const val = node.childrens[0] ? executeCurrentBlock(node.childrens[0]) : null;
+            if(Array.isArray(list)){
+                list.push(val);
+            }
+            return list;
+        }
+        case "getList":{
+            const list = memory[node.value];
+            const idx = node.childrens[0] ? executeCurrentBlock(node.childrens[0]) : null;
+            
+            if (Array.isArray(list)) {
+                return list[Number(idx)]; 
+            }
+            return null;
+        }
+
+        case "lengthList":{
+            const list = memory[node.value];
+            return Array.isArray(list) ? list.length : 0;
+        }
         default:
             return null;
     }

@@ -97,12 +97,51 @@
             </div>
 
             <div class="workspace__category-2 category" id="arrays">Arrays</div>
-            <div class="workspace__array-block block">Создать список</div>
-            <div class="workspace__at-block block">Элемент по индексу</div>
-            <div class="workspace__set_at-block block">Изменить элемент</div>
-            <div class="workspace__insert_at-block block">Вставить элемент</div>
-            <div class="workspace__erase_at-block block">Удалить элемент</div>
-            <div class="workspace__len-block block">Длина списка</div>
+            <div class="category">Массивы</div>
+
+            <div class="workspace__create-list-block block">
+                <div class="workspace__operation">Создать список</div>
+            </div>
+
+            <div class="workspace__list-constructor-block block">
+                <div class="workspace__operation">список из:</div>
+                <div class="workspace__branch" data-branch></div>
+                <button class="add-branch-btn" style="padding: 0 5px;">+</button>
+            </div>
+
+            <div class="workspace__set-list-block block with-input with-branch">
+                <div class = "workspace__block-content with-branch">
+                    <div class="workspace__operation">в списке</div>
+                    <input class="workspace__input" type="text">
+                    <div class="workspace__operation">заменить №</div>
+                    <div class="workspace__branch" data-branch></div>
+                    <div class="workspace__operation">на</div>
+                    <div class="workspace__branch" data-branch></div>
+                </div>
+                <div class="workspace__next-block"></div>
+            </div>
+
+            <div class="workspace__push-list-block block with-input with-branch">
+                <div class = "workspace__block-content with-branch">
+                    <div class="workspace__operation">в список</div>
+                    <input class="workspace__input" type="text">
+                    <div class="workspace__operation">добавить</div>
+                    <div class = "workspace__branch" data-branch></div> 
+                </div>
+                <div class="workspace__next-block"></div>
+            </div>
+
+            <div class="workspace__get-list-block block with-input with-branch">
+                <div class="workspace__operation">из списка</div>
+                <input class="workspace__input" type="text">
+                <div class="workspace__operation">взять №</div>
+                <div class="workspace__branch" data-branch></div>
+            </div>
+
+            <div class="workspace__length-list-block block with-input">
+                <div class="workspace__operation">длина списка</div>
+                <input class="workspace__input" type="text">
+            </div>
 
             <div class="workspace__category-3 category" id="control">Control Flow</div>
             <div class = "workspace__if-block block with-branch">

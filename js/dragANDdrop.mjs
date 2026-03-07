@@ -68,6 +68,28 @@ palette.addEventListener("pointerdown", (e) => {
 });
 
 viewport.addEventListener("pointerdown", (e) => {
+    if (e.target.classList.contains('add-branch-btn')) {
+        e.stopPropagation();
+        const parent = e.target.closest('.workspace__list-constructor-block');
+        if (parent) {
+            const newBranch = document.createElement('div');
+            newBranch.classList.add('workspace__branch');
+            
+            const removeBtn = document.createElement('span');
+            removeBtn.textContent = '×';
+            removeBtn.classList.add('remove-branch-btn');
+            newBranch.appendChild(removeBtn);
+
+            e.target.before(newBranch);
+        }
+        return;
+    }
+
+    if (e.target.classList.contains('remove-branch-btn')) {
+        e.stopPropagation();
+        e.target.parentElement.remove();
+        return; 
+    }
 
     const block = e.target.closest(".code-block");
     if(!block && (e.button === 0)){
@@ -168,5 +190,6 @@ document.addEventListener("pointerup", (e) => {
     draggingBlock = null;
     currentTarget = null;
 });
+
 
 ChangeTransform();

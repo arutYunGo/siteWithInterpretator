@@ -113,11 +113,36 @@
     border: 0px;
 }
 
-.workspace__assign-block, .workspace__print-block, .workspace__if-block, .workspace__while-block{
+.workspace__assign-block, .workspace__print-block, .workspace__if-block, .workspace__while-block, .workspace__push-list-block, .workspace__set-list-block {
     display: flex;
     flex-direction: column;
     padding: 0;
 }
 .workspace__print-block{
     background-color: rgba(219, 60, 219, 0.667);
+}
+
+.workspace__branch {
+    position: relative;
+    overflow: visible; 
+}
+
+.remove-branch-btn {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 16px;
+    height: 16px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid black;
+}
+
+.remove-branch-btn:hover {
+    transform: scale(1.1);
 }
