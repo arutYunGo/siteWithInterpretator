@@ -188,7 +188,7 @@ function executeCurrentBlock(node){
         case "string":
             return node.value;
         case "boolean":
-            if(node.value != "true" || node.value != "false" || node.value != "1" || node.value != "0"){
+            if(node.value != "true" && node.value != "false" && node.value != "1" && node.value != "0"){
                 console.error("ошибка: булеан может быть только true или false(1 или 0)");
                 return null;
             }
@@ -233,7 +233,6 @@ function executeCurrentBlock(node){
             right = executeCurrentBlock(node.childrens[1]);
             return left ** right;
         case "var":
-            console.log("var: " + memory[node.value]);
             return memory[node.value] || 0; 
         case "assign":
             left = node.childrens[0];

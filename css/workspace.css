@@ -21,7 +21,7 @@ body {
     width: 12em;
     height: 2.5em;
     border-radius: 30px 0px 30px 0px;
-    margin-right: 10em;
+    margin-right: 1em;
     font-weight: bold;
     color: white;
 }
@@ -35,6 +35,21 @@ body {
     font-weight: bold;
     color: white;
     background-color: red;
+}
+
+#save-btn{
+    background-color: rgba(255, 255, 255, 0.699);
+    width: 6em;
+    height: 2em;
+    margin-right: 1em;
+    font-weight: bold;
+} 
+#file-input{
+    background-color: rgba(255, 255, 255, 0.699);
+    width: 6em;
+    height: 2em;
+    margin-right: 1em;
+    font-weight: bold;
 }
 
 .buttons{
