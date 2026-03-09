@@ -1,5 +1,5 @@
 
-.workspace__plus-block{
+.workspace__plus{
     display: flex;
     flex-direction: row;
     gap: 20px;

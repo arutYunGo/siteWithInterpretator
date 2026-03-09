@@ -35,7 +35,7 @@
     user-select: none;
 }
 
-.workspace__plus-block{
+.workspace__plus{
     display: flex;
     flex-direction: row;
     gap: 20px;
@@ -113,12 +113,12 @@
     border: 0px;
 }
 
-.workspace__assign-block, .workspace__print-block, .workspace__if-block, .workspace__while-block, .workspace__push-list-block, .workspace__set-list-block {
+.workspace__assign, .workspace__print, .workspace__if, .workspace__while, .workspace__pushList, .workspace__setList {
     display: flex;
     flex-direction: column;
     padding: 0;
 }
-.workspace__print-block{
+.workspace__print{
     background-color: rgba(219, 60, 219, 0.667);
 }
 

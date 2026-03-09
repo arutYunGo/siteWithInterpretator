@@ -19,28 +19,28 @@ let memory = {};
 export function collectData(block){
     const element = {}
     // literals
-    if (block.classList.contains("workspace__start-block")) {
+    if (block.classList.contains("workspace__start")) {
         element.type = "start";
     }
-    else if(block.classList.contains("workspace__print-block")){
+    else if(block.classList.contains("workspace__print")){
         element.type = "print";
     }
-    else if(block.classList.contains("workspace__numberLiteral-block")){
+    else if(block.classList.contains("workspace__number")){
         element.type = "number";
     }
-    else if(block.classList.contains("workspace__stringLiteral-block")){
+    else if(block.classList.contains("workspace__string")){
         element.type = "string";
     }
-    else if(block.classList.contains("workspace__boolLiteral-block")){
-        element.type = "boolean";
+    else if(block.classList.contains("workspace__bool")){
+        element.type = "bool";
     }
-    else if(block.classList.contains("workspace__assign-block")){
+    else if(block.classList.contains("workspace__assign")){
         element.type = "assign";
     }
-    else if(block.classList.contains("workspace__variable-block")){
+    else if(block.classList.contains("workspace__var")){
         element.type = "var";
     }
-    else if(block.classList.contains("workspace__if-block")){
+    else if(block.classList.contains("workspace__if")){
         element.type = "if";
         // condBranch = block.querySelector(".workspace__branch");
         // if(condBranch && condBranch.firstElementChild){
@@ -52,7 +52,7 @@ export function collectData(block){
         const elseSlot = block.querySelector(".workspace__next-block.else");
         element.elseBranch = (elseSlot && elseSlot.firstElementChild) ? collectData(elseSlot.firstElementChild) : null;
     }
-    else if(block.classList.contains("workspace__while-block")){
+    else if(block.classList.contains("workspace__while")){
         element.type = "while";
         // condBranch = block.querySelector(".workspace__branch");
         // if(condBranch && condBranch.firstElementChild){
@@ -62,71 +62,71 @@ export function collectData(block){
         element.bodyBranch = (loopBodySlot && loopBodySlot.firstElementChild) ? collectData(loopBodySlot.firstElementChild) : null;
     }
     // math operators
-    else if(block.classList.contains("workspace__plus-block")){
+    else if(block.classList.contains("workspace__plus")){
         element.type = "plus";
     }
-    else if(block.classList.contains("workspace__minus-block")){
+    else if(block.classList.contains("workspace__minus")){
         element.type = "minus";
     }
-    else if(block.classList.contains("workspace__multiply-block")){
+    else if(block.classList.contains("workspace__multiply")){
         element.type = "multiply";
     }
-    else if(block.classList.contains("workspace__divide-block")){
+    else if(block.classList.contains("workspace__divide")){
         element.type = "divide";
     }
-    else if(block.classList.contains("workspace__intDivide-block")){
+    else if(block.classList.contains("workspace__intDivide")){
         element.type = "intDivide";
     }
-    else if(block.classList.contains("workspace__mod-block")){
+    else if(block.classList.contains("workspace__mod")){
         element.type = "mod";
     }
-    else if(block.classList.contains("workspace__power-block")){
+    else if(block.classList.contains("workspace__power")){
         element.type = "power";
     }
-    else if(block.classList.contains("workspace__eq-block")){
+    else if(block.classList.contains("workspace__eq")){
         element.type = "eq";
     }
-    else if(block.classList.contains("workspace__neq-block")){
+    else if(block.classList.contains("workspace__neq")){
         element.type = "neq";
     }
-    else if(block.classList.contains("workspace__lt-block")){
+    else if(block.classList.contains("workspace__lt")){
         element.type = "lt";
     }
-    else if(block.classList.contains("workspace__gt-block")){
+    else if(block.classList.contains("workspace__gt")){
         element.type = "gt";
     }
-    else if(block.classList.contains("workspace__lte-block")){
+    else if(block.classList.contains("workspace__lte")){
         element.type = "lte";
     }
-    else if(block.classList.contains("workspace__gte-block")){
+    else if(block.classList.contains("workspace__gte")){
         element.type = "gte";
     }
-    else if(block.classList.contains("workspace__and-block")){
+    else if(block.classList.contains("workspace__and")){
         element.type = "and";
     }
-    else if(block.classList.contains("workspace__or-block")){
+    else if(block.classList.contains("workspace__or")){
         element.type = "or";
     }
-    else if(block.classList.contains("workspace__not-block")){
+    else if(block.classList.contains("workspace__not")){
         element.type = "not";
     }
     // массивы
-    else if(block.classList.contains("workspace__create-list-block")){
+    else if(block.classList.contains("workspace__createList")){
         element.type = "createList";
     }
-    else if(block.classList.contains("workspace__set-list-block")){
+    else if(block.classList.contains("workspace__setList")){
         element.type = "setList";
     }
-    else if(block.classList.contains("workspace__push-list-block")){
+    else if(block.classList.contains("workspace__pushList")){
         element.type = "pushList";
     }
-    else if(block.classList.contains("workspace__get-list-block")){
+    else if(block.classList.contains("workspace__getList")){
         element.type = "getList";
     }
-    else if(block.classList.contains("workspace__length-list-block")){
+    else if(block.classList.contains("workspace__lengthList")){
         element.type = "lengthList";
     }
-    else if(block.classList.contains("workspace__list-constructor-block")){
+    else if(block.classList.contains("workspace__listConstructor")){
         element.type = "listConstructor";
     }
 
@@ -187,7 +187,7 @@ function executeCurrentBlock(node){
         case "number":
         case "string":
             return node.value;
-        case "boolean":
+        case "bool":
             if(node.value != "true" && node.value != "false" && node.value != "1" && node.value != "0"){
                 console.error("ошибка: булеан может быть только true или false(1 или 0)");
                 return null;
@@ -389,7 +389,7 @@ function run(node){
 const runButton = document.querySelector('#run-btn');
 
 runButton.addEventListener('click',() => {
-    const startBlock = document.querySelector('.workspace__scene .workspace__start-block.code-block');
+    const startBlock = document.querySelector('.workspace__scene .workspace__start.code-block');
 
     if (!startBlock) {
         console.warn("Программа не начата, т.к. нет блока START!");

@@ -70,7 +70,7 @@ palette.addEventListener("pointerdown", (e) => {
 viewport.addEventListener("pointerdown", (e) => {
     if (e.target.classList.contains('add-branch-btn')) {
         e.stopPropagation();
-        const parent = e.target.closest('.workspace__list-constructor-block');
+        const parent = e.target.closest('.workspace__listConstructor');
         if (parent) {
             const newBranch = document.createElement('div');
             newBranch.classList.add('workspace__branch');
