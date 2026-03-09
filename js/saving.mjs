@@ -5,6 +5,7 @@ const saveBtn = document.querySelector("#save-btn");
 saveBtn.addEventListener("click", () => {
     const startBlock = document.querySelector(".workspace__start.code-block");
     const data = collectData(startBlock);
+    console.log(data);
     saveToFile(data);
 })
 
@@ -28,162 +29,103 @@ function saveToFile(data){
 
 const fileInput = document.querySelector("#file-input"); 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// fileInput.addEventListener("change",(e) => {
-//     const file = e.target.files[0];
-//     if (!file) return;
-//     console.log("Имя файла:", file.name);
-//     console.log("Размер:", file.size, "байт");
-
-//     const reader = new FileReader();
-//     reader.onload = (e) => {
-//         collectBlock(e.target.result);
-//         console.log(e.target.result);
-//     }
+fileInput.addEventListener("change",(e) => {
+    const file = e.target.files[0];
+    console.log("Имя файла:", file.name);
+    console.log("Размер:", file.size, "байт");
     
-//     reader.onerror = () => console.error("Ошибка при чтении файла");
+    const reader = new FileReader();
 
-//     reader.readAsText(file);
-// });
+    reader.onload = (e) => {
+        console.log(e.target.result);
+        parseText(e.target.result);
+    } 
+    reader.onerror = () => console.error("Ошибка при чтении файла");
 
-// function collectBlock(text){
-//     try{
-//         const data = JSON.parse(text);
+    reader.readAsText(file);
+});
 
-//         console.log("Объект готов к работе:", data);
+function parseText(text){
+    try{
+        const data = JSON.parse(text);
+        const scene = document.querySelector(".workspace__scene");
+        scene.innerHTML = "";
+        console.log("parse:", data);
 
-//         showCode(data);
-//     }
-//     catch (error) {
-//         console.error("Файл поврежден или это не JSON:", error);
-//     }
-// }
+        const code = collectBlock(data);
+        if(code) {
+            code.style.position = "absolute";
+            
+            code.style.left = "5000px";
+            code.style.top = "5000px";
+            scene.appendChild(code);
+        }
+    }
+    catch{
+        console.error("Неправильный файл", error);
+    }
+}
 
-// const typeToClass = {
+function collectBlock(data){
+    if (!data) return null;
+    const tmp = document.querySelector(`.workspace__block-palette .workspace__${data.type}`);
+    if(!tmp){
+        console.error("ошибка", error);
+    }
 
-//     "start": "start-block",
-//     "print": "print-block",
-    
-  
-//     "number": "numberLiteral-block",   
-//     "string": "stringLiteral-block",   
-//     "boolean": "boolLiteral-block",   
-//     "var": "variable-block",      
-//     "assign": "assign-block",
-    
-   
-//     "createList": "create-list-block",      
-//     "listConstructor": "list-constructor-block",
-//     "setList": "set-list-block",            
-//     "pushList": "push-list-block",    
-//     "getList": "get-list-block",            
-//     "lengthList": "length-list-block",     
+    const element = tmp.cloneNode(true);
+    element.classList.add("code-block");
+    element.classList.remove("block");
 
-//     "if": "if-block",
-//     "while": "while-block",
+    if(data.value !== undefined){
+        const input = element.querySelector(".workspace__input");
+        if(input) input.value = data.value;
+    }
 
-//     "plus": "plus-block",
-//     "minus": "minus-block",
-//     "multiply": "multiply-block",
-//     "divide": "divide-block",
-//     "intDivide": "intDivide-block",
-//     "mod": "mod-block",
-//     "power": "power-block",
+    if(data.childrens && data.childrens.length > 0){
+        const branches = element.querySelectorAll(".workspace__branch");
+        data.childrens.forEach((child, idx) => {
+            if (child && branches[idx]){
+                const childData = collectBlock(child);
+                if(childData) branches[idx].appendChild(childData);
+            }
+        });
+    }
 
-//     "eq": "eq-block",
-//     "neq": "neq-block",
-//     "lt": "lt-block",
-//     "gt": "gt-block",
-//     "lte": "lte-block",
-//     "gte": "gte-block",
-//     "and": "and-block",
-//     "or": "or-block",
-//     "not": "not-block"
-// };
+    if(data.type == "if"){
+        if(data.thenBranch){
+            element.querySelector(".then").appendChild(collectBlock(data.thenBranch));
+        }
+        if (data.elseBranch) {
+            element.querySelector(".else").appendChild(collectBlock(data.elseBranch));
+        }
+    }
+    if(data.type == "while"){
+        if(data.bodyBranch){
+            element.querySelector(".loop-body").appendChild(collectBlock(data.bodyBranch));
+        }
+    }
 
-// function showCode(block){
-//     const blockClass = typeToClass[block.type];
-//     const temp = document.querySelector(`.workspace__block-palette .workspace__${blockClass}`);
-//     if (!template) {
-//         console.error("Шаблон не найден для типа:", blockData.type);
-//         return null;
-//     }
-
-//     const element = temp.cloneNode(true);
-//     element.classList.add("code-block");
-//     element.classList.remove("block");
-
-//     if (block.value !== undefined) {
-//         const input = element.querySelector(".workspace__input");
-//         if (input) input.value = block.value;
-//     }
-
-//     if(blockData.childrens && blockData.childrens.length > 0){
-//         const branchs = element.querySelectorAll(".workspace__branch");
-//         block.childrens.forEach((child, idx) => {
-//             if (child && branchs[idx]){
-//                 const childData = showCode(child);
-//                 if(childData) branchs[idx].appendChild(childData);
-//             }
-//         });
-//     }
-
-//     if (block.type === "if") {
-//         const thenSlot = element.querySelector(".then");
-//         const elseSlot = element.querySelector(".else");
-        
-//         // Вызываем эту же функцию для вложенных блоков!
-//         if (block.thenBranch) {
-//             thenSlot.appendChild(showCode(block.thenBranch));
-//         }
-//         if (block.elseBranch) {
-//             elseSlot.appendChild(showCode(block.elseBranch));
-//         }
-//     }
-//     else if(block.type == "while"){
-//         if (block.bodyBranch) {
-//             element.querySelector(".loop-body").appendChild(showCode(block.bodyBranch));
-//         }
-//     }
-
-
-//     if (block.next) {
-//         let nextContainer;
-//         if (block.type == 'if') {
-//             nextContainer = element.querySelector(".next-if");
-//         } else if (block.type == 'while') {
-//             nextContainer = element.querySelector(".next-while");
-//         } else {
-//             nextContainer = element.querySelector(".workspace__next-block");
-//         }
-
-//         if (nextContainer) {
-//             const nextNode = showCode(block.next);
-//             if (nextNode) nextContainer.appendChild(nextNode);
-//         }
-//     }
-
-//     return element;
-// }
+    if(data.type != "if" && data.type != "while"){
+        const nextBlock = element.querySelector(".workspace__next-block");
+        if(nextBlock){
+            const nextElement = collectBlock(data.next);
+            if (nextElement) nextBlock.appendChild(nextElement);
+        }
+    }
+    else if(data.type == "if"){
+        const nextBlock = element.querySelector(".workspace__next-block.next-if");
+        if(nextBlock){
+            const nextElement = collectBlock(data.next);
+            if (nextElement) nextBlock.appendChild(nextElement);
+        }
+    }
+    else if(data.type == "if"){
+        const nextBlock = element.querySelector(".workspace__next-block.next-while");
+        if(nextBlock){
+            const nextElement = collectBlock(data.next);
+            if (nextElement) nextBlock.appendChild(nextElement);
+        }
+    }
+    return element;
+}
