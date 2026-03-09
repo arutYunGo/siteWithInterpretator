@@ -9,6 +9,7 @@
 // const block = document.querySelector(".workspace__numberLiteral-block");
 
 let memory = {};
+const maxIteration = 500; // while
 
 // block.addEventListener('input', () => {
 //     const ob = getBlockData(block);
@@ -270,8 +271,14 @@ function executeCurrentBlock(node){
             return null;
         case "while": {
             let condition = node.childrens[0] ? executeCurrentBlock(node.childrens[0]) : false;
+            let countIteration = 0;
             
             while(condition === true){
+                countIteration++;
+                if(countIteration > maxIteration){
+                    console.error("Ошибка: превышен лимит итераций");
+                    return null;
+                }
                 if(node.bodyBranch){
                     run(node.bodyBranch);
                 }
