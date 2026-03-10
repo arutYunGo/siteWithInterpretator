@@ -56,3 +56,9 @@ body {
     display: flex;
     align-items: center;
 }
+
+.block-error {
+    background-color: rgba(255, 0, 0, 0.696)!important;
+    border: 2px solid red !important;
+    box-shadow: 0 0 10px red;
+}

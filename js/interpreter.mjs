@@ -19,6 +19,7 @@ const maxIteration = 500; // while
 
 export function collectData(block){
     const element = {}
+    element.htmlElement = block;
     // literals
     if (block.classList.contains("workspace__start")) {
         element.type = "start";
@@ -178,20 +179,23 @@ export function collectData(block){
             element.next = collectData(nextBlock.firstElementChild);
         }
     }
-
     return element;
 }
 
 function executeCurrentBlock(node){
-    let left,right;
+    if (!node) return null;
+    let left,right, t;
     switch(node.type){
         case "number":
+            if(typeof(node.value) != "number"){
+                throw {message: "Ошибка: неправильный инпут", node: node};
+            }
+            return node.value;
         case "string":
             return node.value;
         case "bool":
             if(node.value != "true" && node.value != "false" && node.value != "1" && node.value != "0"){
-                console.error("ошибка: булеан может быть только true или false(1 или 0)");
-                return null;
+                throw {message: "Ошибка: булеан может быть только true или false(1 или 0)", node: node};
             }
             if(node.value == "true" || node.value == "1"){
                 return true;
@@ -202,56 +206,91 @@ function executeCurrentBlock(node){
         case "plus":
             left = executeCurrentBlock(node.childrens[0]);
             right = executeCurrentBlock(node.childrens[1]);
-            // if(Number(left.value) != Number(right.value)){
-            //     if (typeof(left) !== typeof(right)) {
-            //         console.error("ошибка: типы аргументов должны совпадать");
-            //         return null
-            //     }
-            // }
+            if (typeof(left) !== typeof(right)) {
+                throw {message: "Ошибка: типы аргументов должны совпадать", node: node};
+            }
             return left + right;
         case "minus":
             left = executeCurrentBlock(node.childrens[0]);
             right = executeCurrentBlock(node.childrens[1]);
+            if (typeof(left) !== typeof(right)) {
+                throw {message: "Ошибка: типы аргументов должны совпадать", node: node};
+            }
             return left - right;
         case "multiply":
             left = executeCurrentBlock(node.childrens[0]);
             right = executeCurrentBlock(node.childrens[1]);
+            if (typeof(left) !== typeof(right)) {
+                throw {message: "Ошибка: типы аргументов должны совпадать", node: node};
+            }
             return left * right;
         case "divide":
             left = executeCurrentBlock(node.childrens[0]);
             right = executeCurrentBlock(node.childrens[1]);
+            if (typeof(left) !== typeof(right)) {
+                throw {message: "Ошибка: типы аргументов должны совпадать", node: node};
+            }
             return left / right;
         case "intDivide":
             left = executeCurrentBlock(node.childrens[0]);
             right = executeCurrentBlock(node.childrens[1]);
+            if (typeof(left) !== typeof(right)) {
+                throw {message: "Ошибка: типы аргументов должны совпадать", node: node};
+            }
             return Math.trunc(left / right);
         case "mod":
             left = executeCurrentBlock(node.childrens[0]);
             right = executeCurrentBlock(node.childrens[1]);
+            if (typeof(left) !== typeof(right)) {
+                throw {message: "Ошибка: типы аргументов должны совпадать", node: node};
+            }
             return left % right;
         case "power":
             left = executeCurrentBlock(node.childrens[0]);
             right = executeCurrentBlock(node.childrens[1]);
+            if (typeof(left) !== typeof(right)) {
+                throw {message: "Ошибка: типы аргументов должны совпадать", node: node};
+            }
             return left ** right;
         case "var":
+            // сделать чтобы в переменной нельзя было вводить цифру!!!!!
+            if(!(node.value in memory)){
+                throw { message: "Ошибка: переменная не найдена", node: node};
+            }
             return memory[node.value] || 0; 
         case "assign":
             left = node.childrens[0];
     
             if (!left || left.type !== "var") {
-                console.error("ошибка - должна быть переменная");
-                return null; 
+                throw{message: "ошибка - должна быть переменная",node: node.childrens[0]};
             }
-            right = executeCurrentBlock(node.childrens[1]);
+            let rightNode = node.childrens[1];
+            if (!rightNode) {
+                throw {message: "Ошибка: нечего присваивать", node: node};
+            }
+            t = rightNode.type;
+            if(t == "start" || t =="print" || t == "if" || t == "while" ||
+                t == "setList" || t == "pushList"
+            ){
+                throw {message: "Ошибка: неправильно вставленный блок", node: node.childrens[1]};
+            }
+            right = executeCurrentBlock(rightNode);
             memory[left.value] = right;
             return right;
         case "print":
             const output = document.querySelector('.workspace__output');
-            if(node.childrens == 0){
-                return null;
+            if(!node.childrens[0]){
+                throw {message: "Ошибка: print пуст", node: node};
             }
             const print = executeCurrentBlock(node.childrens[0]);
-
+            t = node.childrens[0].type;
+            console.log(node.childrens[0]);
+            if(t == "start" || t =="print" || t == "if" || t == "while" ||
+                t == "setList" || t == "pushList" || t == "createList" ||
+                t == "listConstructor"
+            ){
+                throw {message: "Ошибка: неправильно вставленный блок", node: node.childrens[0]};
+            }
             if (output) {
                 output.innerHTML += `<div> ${print}</div>`;
                 output.scrollTop = output.scrollHeight;
@@ -261,6 +300,15 @@ function executeCurrentBlock(node){
             return null;
         case "if":
             const condition = node.childrens[0] ? executeCurrentBlock(node.childrens[0]) : null;
+            t = node.childrens[0].type;
+            if(t == "start" || t =="print" || t == "if" || t == "while" ||
+                t == "setList" || t == "pushList" || t == "createList" || 
+                t == "listConstructor" || t == "getList" || t == "lengthList" || 
+                t == "number" || t == "string" || t == "bool" || t == "var" ||
+                t == "assign"
+            ){
+                throw {message: "Ошибка: условие блока if может иметь только возвращаемое значение", node: node.childrens[0]};
+            }
             
             if(condition === true){
                 if(node.thenBranch) run(node.thenBranch);
@@ -272,11 +320,21 @@ function executeCurrentBlock(node){
         case "while": {
             let condition = node.childrens[0] ? executeCurrentBlock(node.childrens[0]) : false;
             let countIteration = 0;
+            t = node.childrens[0].type;
+            if(t == "start" || t =="print" || t == "if" || t == "while" ||
+                t == "setList" || t == "pushList" || t == "createList" || 
+                t == "listConstructor" || t == "getList" || t == "lengthList" || 
+                t == "number" || t == "string" || t == "bool" || t == "var" ||
+                t == "assign"
+            ){
+                throw {message: "Ошибка: условие блока while может иметь только возвращаемое значение", node: node.childrens[0]};
+            }
             
             while(condition === true){
+                console.log(memory)
                 countIteration++;
                 if(countIteration > maxIteration){
-                    console.error("Ошибка: превышен лимит итераций");
+                    console.error("Ошибка");
                     return null;
                 }
                 if(node.bodyBranch){
@@ -287,30 +345,45 @@ function executeCurrentBlock(node){
             return null;
         }
         case "eq":
+            wrongValue(node.childrens[0],node);
+            wrongValue(node.childrens[1],node);
+
             left = executeCurrentBlock(node.childrens[0]);
             right = executeCurrentBlock(node.childrens[1]);
             return left == right ? true : false;
         case "neq":
+            wrongValue(node.childrens[0],node);
+            wrongValue(node.childrens[1],node);
             left = executeCurrentBlock(node.childrens[0]);
             right = executeCurrentBlock(node.childrens[1]);
             return left != right ? true : false;
         case "lt":
+            wrongValue(node.childrens[0],node);
+            wrongValue(node.childrens[1],node);
             left = executeCurrentBlock(node.childrens[0]);
             right = executeCurrentBlock(node.childrens[1]);
             return left < right ? true : false;
         case "gt":
+            wrongValue(node.childrens[0],node);
+            wrongValue(node.childrens[1],node);
             left = executeCurrentBlock(node.childrens[0]);
             right = executeCurrentBlock(node.childrens[1]);
             return left > right ? true : false;
         case "lte":
+            wrongValue(node.childrens[0],node);
+            wrongValue(node.childrens[1],node);
             left = executeCurrentBlock(node.childrens[0]);
             right = executeCurrentBlock(node.childrens[1]);
             return left <= right ? true : false;
         case "gte":
+            wrongValue(node.childrens[0],node);
+            wrongValue(node.childrens[1],node);
             left = executeCurrentBlock(node.childrens[0]);
             right = executeCurrentBlock(node.childrens[1]);
             return left >= right ? true : false;
         case "and":
+            wrongValue(node.childrens[0],node);
+            wrongValue(node.childrens[1],node);
             left = executeCurrentBlock(node.childrens[0]);
             right = executeCurrentBlock(node.childrens[1]);
             if(left && right){
@@ -320,6 +393,8 @@ function executeCurrentBlock(node){
                 return false;
             }
         case "or":
+            wrongValue(node.childrens[0],node);
+            wrongValue(node.childrens[1],node);
             left = executeCurrentBlock(node.childrens[0]);
             right = executeCurrentBlock(node.childrens[1]);
             if(left || right){
@@ -329,6 +404,7 @@ function executeCurrentBlock(node){
                 return false;
             }
         case "not":
+            wrongValue(node.childrens[0],node);
             right = executeCurrentBlock(node.childrens[0])
             if(right){
                 return false;
@@ -339,33 +415,91 @@ function executeCurrentBlock(node){
         case "createList":
             return [];
         case "listConstructor":
-            return node.childrens.map(child => child ? executeCurrentBlock(child) : null);
+            return node.childrens.map(child => {
+                if (!child) throw {message: "Ошибка: пустая ячейка в конструкторе", node: node};
+                t = child.type;
+                if(t == "number" || t == "var" || t == "string" || t == "bool" ||
+                    t == "plus" || t == "minus" || t == "divide" || t == "intDivide" ||
+                    t == "multiply" || t == "mod" || t == "power"
+                ){
+                    return executeCurrentBlock(child);
+                }
+                else{
+                    throw {message: "Ошибка: в ветке блока должен быть блок литерала",node: child};
+                }
+            });
         case "setList": { 
-            const list = memory[node.value];
-            const idx = node.childrens[0] ? executeCurrentBlock(node.childrens[0]) : null;
-            const val = node.childrens[1] ? executeCurrentBlock(node.childrens[1]) : null;
-
-            if (Array.isArray(list) && idx !== null) {
-                list[Number(idx)] = val;
+            if(!node.childrens[0] || !node.childrens[1]){
+                throw {message: "Ошибка: должен быть блок в ветке", node: node};
             }
-            return list;
+            t = node.childrens[0].type;
+            let t1 = node.childrens[1].type;
+            if(t == "number" || t == "var" || t == "plus" || t == "minus" || t == "divide" || t == "intDivide" ||
+                    t == "multiply" || t == "mod" || t == "power"){
+                if(t1 == "number" || t1 == "var" || t1 == "string" || t1 == "bool" || t1 == "plus" || t1 == "minus" || t1 == "divide" || t1 == "intDivide" ||
+                    t1 == "multiply" || t1 == "mod" || t1 == "power" || t1 == "getList" || t1 == "lengthList"){
+                    const list = memory[node.value];
+                    const idx = node.childrens[0] ? executeCurrentBlock(node.childrens[0]) : null;
+                    const val = node.childrens[1] ? executeCurrentBlock(node.childrens[1]) : null;
+
+                    if (Array.isArray(list) && idx !== null) {
+                        list[Number(idx)] = val;
+                    }
+                    return list;
+                }
+                else{
+                    throw {message: "Ошибка: во второй ветке должен быть блок литерала",node: node.childrens[1]}
+                }
+            }
+            else{
+                throw {message: "Ошибка: в первой ветке должно быть число",node: node.childrens[0]}
+            }
         }
         case "pushList":{
-            const list = memory[node.value];
-            const val = node.childrens[0] ? executeCurrentBlock(node.childrens[0]) : null;
-            if(Array.isArray(list)){
-                list.push(val);
+            if(!node.childrens[0]){
+                throw {message: "Ошибка: должен быть блок в ветке", node: node};
             }
-            return list;
+            t = node.childrens[0].type;
+            if(t == "number" || t == "var" || t == "string" || t == "bool" || t == "plus" || t == "minus" || t == "divide" || t == "intDivide" ||
+                t == "multiply" || t == "mod" || t == "power"){
+                const list = memory[node.value];
+                const val = node.childrens[0] ? executeCurrentBlock(node.childrens[0]) : null;
+                if(Array.isArray(list)){
+                    list.push(val);
+                }
+                return list;
+            }
+            else{
+                throw {message: "Ошибка: в ветке блока должен быть блок литерала",node: node.childrens[0]}
+            }
         }
         case "getList":{
-            const list = memory[node.value];
-            const idx = node.childrens[0] ? executeCurrentBlock(node.childrens[0]) : null;
-            
-            if (Array.isArray(list)) {
-                return list[Number(idx)]; 
+            if(!Array.isArray(memory[node.value])){
+                throw {message: "Ошибка: данного массива не существует", node: node};
             }
-            return null;
+            if(!node.childrens[0]){
+                throw {message: "Ошибка: должен быть блок числа или переменной", node: node};
+            }
+            t = node.childrens[0].type;
+            if(t == "number" || t == "var" || t == "plus" || t == "minus" || t == "divide" || t == "intDivide" ||
+                    t == "multiply" || t == "mod" || t == "power"){
+                const list = memory[node.value];
+                const idx = node.childrens[0] ? executeCurrentBlock(node.childrens[0]) : null;
+                if (!Number.isInteger(idx)) {
+                    throw { message: "Ошибка: индекс должен быть целым числом", node: node.childrens[0] };
+                }
+                if(idx >= list.length || idx < 0){
+                    throw {message: "Ошибка: данного индекса нет в массиве", node: node.childrens[0]};
+                }
+                
+                if (Array.isArray(list)) {
+                    return list[Number(idx)]; 
+                }
+                return null;
+            }
+            else{
+                throw {message: "Ошибка: в ветке блока должен быть блок числа или переменной",node: node.childrens[0]}
+            }
         }
 
         case "lengthList":{
@@ -382,20 +516,35 @@ function executeCurrentBlock(node){
 
 
 function run(node){
-    let currentNode = node;
-    let lastResult = 0;
-    
+    try{
+        let currentNode = node;
+        let lastResult = 0;
+        
 
-    while (currentNode) {
-        lastResult = executeCurrentBlock(currentNode);
-        currentNode = currentNode.next;
+        while (currentNode) {
+            lastResult = executeCurrentBlock(currentNode);
+            currentNode = currentNode.next;
+        }
+
+        return lastResult;
     }
+    catch(error){
+        console.error(error.message);
 
-    return lastResult;
+        if(error.node && error.node.htmlElement){
+            error.node.htmlElement.classList.add("block-error");
+        }
+        const output = document.querySelector('.workspace__output');
+        if (output) {
+            output.innerHTML += `<div style="color: red; font-weight: bold;">! ${error.message}</div>`;
+        }
+    }
 }
 const runButton = document.querySelector('#run-btn');
 
 runButton.addEventListener('click',() => {
+    clearErrors();
+
     const startBlock = document.querySelector('.workspace__scene .workspace__start.code-block');
 
     if (!startBlock) {
@@ -423,3 +572,24 @@ const rstButton = document.querySelector('#rst-btn');
 rstButton.addEventListener('click',() =>{
     location.reload();
 })
+
+function clearErrors() {
+    const errorBlocks = document.querySelectorAll('.block-error'); 
+    
+    errorBlocks.forEach(block => {
+        block.classList.remove("block-error");
+    });
+}
+
+function wrongValue(node,parentNode){
+    if(!node){
+        throw {message: "Ошибка: ветка не имеет блока",node: parentNode};
+    }
+    let t = node.type;
+    if(t == "start" || t =="print" || t == "if" || t == "while" ||
+                t == "setList" || t == "pushList" || t == "createList" ||
+                t == "listConstructor" || t == "assign"
+            ){
+                throw {message: "Ошибка: ветка блока может иметь только возвращаемое значение", node: node};
+            }
+}

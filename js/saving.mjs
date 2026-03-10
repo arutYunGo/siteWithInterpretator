@@ -120,7 +120,7 @@ function collectBlock(data){
             if (nextElement) nextBlock.appendChild(nextElement);
         }
     }
-    else if(data.type == "if"){
+    else if(data.type == "while"){
         const nextBlock = element.querySelector(".workspace__next-block.next-while");
         if(nextBlock){
             const nextElement = collectBlock(data.next);
