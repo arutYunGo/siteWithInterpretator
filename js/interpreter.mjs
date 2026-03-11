@@ -166,17 +166,26 @@ export function collectData(block){
         }
     }
     else if(element.type == "if"){
-        const nextBlock = block.querySelector(".workspace__next-block.next-if");
-
-        if(nextBlock && nextBlock.firstElementChild){
-            element.next = collectData(nextBlock.firstElementChild);
+        const nextBlocks = block.querySelectorAll(".workspace__next-block.next-if");
+        for(const el of nextBlocks){
+            if(el.closest(".code-block, .block") == block){
+                const nextBlock = el;
+                if(nextBlock && nextBlock.firstElementChild){
+                    element.next = collectData(nextBlock.firstElementChild);
+                }
+            }
         }
     }
     else if(element.type == "while"){
-        const nextBlock = block.querySelector(".workspace__next-block.next-while");
+        const nextBlocks = block.querySelectorAll(".workspace__next-block.next-while");
 
-        if(nextBlock && nextBlock.firstElementChild){
-            element.next = collectData(nextBlock.firstElementChild);
+        for(const el of nextBlocks){
+            if(el.closest(".code-block, .block") == block){
+                const nextBlock = el;
+                if(nextBlock && nextBlock.firstElementChild){
+                    element.next = collectData(nextBlock.firstElementChild);
+                }
+            }
         }
     }
     return element;
@@ -331,7 +340,6 @@ function executeCurrentBlock(node){
             }
             
             while(condition === true){
-                console.log(memory)
                 countIteration++;
                 if(countIteration > maxIteration){
                     console.error("Ошибка");

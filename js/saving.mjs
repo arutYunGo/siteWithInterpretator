@@ -82,12 +82,30 @@ function collectBlock(data){
         if(input) input.value = data.value;
     }
 
-    if(data.childrens && data.childrens.length > 0){
-        const branches = element.querySelectorAll(".workspace__branch");
+    if (data.childrens && data.childrens.length > 0) {
+        let branches = element.querySelectorAll(".workspace__branch");
+        
+        if (data.childrens.length > branches.length) {
+            if(branches[0]){
+                const branchContainer = branches[0].parentElement;
+                if (branchContainer) {
+                    const needBranches = data.childrens.length - branches.length;
+                    for (let i = 0; i < needBranches; i++) {
+                        const newBranch = branches[0].cloneNode(true);
+                        newBranch.innerHTML = ""; 
+                        branches[0].after(newBranch);
+                    }
+                    branches = element.querySelectorAll(".workspace__branch");
+                }
+            }
+        }
+
         data.childrens.forEach((child, idx) => {
-            if (child && branches[idx]){
+            if (child && branches[idx]) {
                 const childData = collectBlock(child);
-                if(childData) branches[idx].appendChild(childData);
+                if (childData) {
+                    branches[idx].appendChild(childData);
+                }
             }
         });
     }
