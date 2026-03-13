@@ -5,7 +5,6 @@ const saveBtn = document.querySelector("#save-btn");
 saveBtn.addEventListener("click", () => {
     const startBlock = document.querySelector(".workspace__start.code-block");
     const data = collectData(startBlock);
-    console.log(data);
     saveToFile(data);
 })
 
@@ -118,31 +117,24 @@ function collectBlock(data){
             element.querySelector(".else").appendChild(collectBlock(data.elseBranch));
         }
     }
-    if(data.type == "while"){
+    else if(data.type == "while"){
         if(data.bodyBranch){
             element.querySelector(".loop-body").appendChild(collectBlock(data.bodyBranch));
         }
     }
+    if (data.next) {
+        let nextContainer = null;
 
-    if(data.type != "if" && data.type != "while"){
-        const nextBlock = element.querySelector(".workspace__next-block");
-        if(nextBlock){
-            const nextElement = collectBlock(data.next);
-            if (nextElement) nextBlock.appendChild(nextElement);
+        if (data.type === "if") {
+            nextContainer = element.querySelector(".next-if");
+        } else if (data.type === "while") {
+            nextContainer = element.querySelector(".next-while");
+        } else {
+            nextContainer = element.querySelector(".workspace__next-block");
         }
-    }
-    else if(data.type == "if"){
-        const nextBlock = element.querySelector(".workspace__next-block.next-if");
-        if(nextBlock){
-            const nextElement = collectBlock(data.next);
-            if (nextElement) nextBlock.appendChild(nextElement);
-        }
-    }
-    else if(data.type == "while"){
-        const nextBlock = element.querySelector(".workspace__next-block.next-while");
-        if(nextBlock){
-            const nextElement = collectBlock(data.next);
-            if (nextElement) nextBlock.appendChild(nextElement);
+
+        if (nextContainer) {
+            nextContainer.appendChild(collectBlock(data.next));
         }
     }
     return element;

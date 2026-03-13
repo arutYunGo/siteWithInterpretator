@@ -5,7 +5,7 @@
 
 .block{
     background-color: rgba(21, 75, 221, 0.744);
-    min-height: 6vh;
+    min-height: 40px;
     width: fit-content;
     border: 2px solid black;
     margin: 20px 0px 0px 5px;
