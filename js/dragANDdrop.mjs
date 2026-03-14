@@ -148,7 +148,6 @@ document.addEventListener("pointerup", (e) => {
     if(!draggingBlock) return;
 
     try {
-        // Пробуем собрать данные. Если упадет — перейдет в catch
         console.log(JSON.stringify(collectData(draggingBlock), null, 2));
     } catch (err) {
         console.warn("Ошибка в collectData:", err.message);
