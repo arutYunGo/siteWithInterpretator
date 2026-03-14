@@ -109,7 +109,7 @@ function collectBlock(data){
         });
     }
 
-    if(data.type == "if"){
+    if(data.type === "if"){
         if(data.thenBranch){
             element.querySelector(".then").appendChild(collectBlock(data.thenBranch));
         }
@@ -117,7 +117,7 @@ function collectBlock(data){
             element.querySelector(".else").appendChild(collectBlock(data.elseBranch));
         }
     }
-    else if(data.type == "while"){
+    else if(data.type === "while"){
         if(data.bodyBranch){
             element.querySelector(".loop-body").appendChild(collectBlock(data.bodyBranch));
         }

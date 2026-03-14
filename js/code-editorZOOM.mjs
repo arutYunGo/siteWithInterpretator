@@ -18,11 +18,11 @@ const scene = document.querySelector(".workspace__scene");
 const viewport = document.querySelector(".workspace__viewport");
 
 
-export function ChangeTransform(e){
+export function changeTransform(e){
     scene.style.transform = `translate(${zoomState.x}px, ${zoomState.y}px) scale(${zoomState.scale})`;
 }
 
-ChangeTransform();
+changeTransform();
 
 
 viewport.addEventListener("wheel", (e) => {
@@ -45,6 +45,6 @@ viewport.addEventListener("wheel", (e) => {
     zoomState.y = mouseY - (mouseY - zoomState.y) * ratio;
     zoomState.scale = newScale;
 
-    ChangeTransform();
+    changeTransform();
 
 },{passive: false})

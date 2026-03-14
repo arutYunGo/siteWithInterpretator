@@ -1,4 +1,4 @@
-import {zoomState, ChangeTransform} from './code-editorZOOM.mjs';
+import {zoomState, changeTransform} from './code-editorZOOM.mjs';
 import {collectData} from './interpreter.mjs';
 
 const palette = document.querySelector(".workspace__block-palette");
@@ -123,7 +123,7 @@ document.addEventListener("pointermove", (e) => {
         zoomState.y += e.clientY - lastMouseY;
         lastMouseX = e.clientX;
         lastMouseY = e.clientY;
-        ChangeTransform();
+        changeTransform();
         return;
     }
     if(!draggingBlock) return;
@@ -192,4 +192,4 @@ document.addEventListener("pointerup", (e) => {
 });
 
 
-ChangeTransform();
+changeTransform();
